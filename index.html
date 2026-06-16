@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI快速生成平台 — 项目方案</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #0a0a1a;
+    --surface: #111128;
+    --surface2: #1a1a3e;
+    --accent: #6c5ce7;
+    --accent2: #00cec9;
+    --accent3: #fd79a8;
+    --text: #e8e8f0;
+    --text2: #8888aa;
+    --glow: rgba(108, 92, 231, 0.3);
+  }
+
+  body {
+    font-family: 'Noto Sans SC', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+  }
+
+  /* ===== SLIDE CONTAINER ===== */
+  .slides {
+    height: 100vh;
+    width: 100vw;
+    position: relative;
+  }
+
+  .slide {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 60px 80px;
+    opacity: 0;
+    transform: scale(0.95);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+    pointer-events: none;
+    overflow-y: auto;
+  }
+  .slide.active {
+    opacity: 1;
+    transform: scale(1);
+    pointer-events: auto;
+    z-index: 10;
+  }
+
+  /* ===== BACKGROUND PARTICLES ===== */
+  #particles {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+  .particle {
+    position: absolute;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    opacity: 0.15;
+    animation: float 20s infinite ease-in-out;
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0) translateX(0); }
+    25% { transform: translateY(-80px) translateX(40px); }
+    50% { transform: translateY(-40px) translateX(-30px); }
+    75% { transform: translateY(-100px) translateX(20px); }
+  }
+
+  /* ===== GRID BACKGROUND ===== */
+  .grid-bg {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background-image:
+      linear-gradient(rgba(108,92,231,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(108,92,231,0.04) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ===== NAVIGATION ===== */
+  .nav {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    z-index: 100;
+    background: rgba(17,17,40,0.8);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 40px;
+    padding: 10px 24px;
+  }
+  .nav-btn {
+    background: none;
+    border: 1px solid rgba(255,255,255,0.15);
+    color: var(--text2);
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+  }
+  .nav-btn:hover { border-color: var(--accent); color: var(--text); }
+  .nav-dots {
+    display: flex;
+    gap: 6px;
+    margin: 0 8px;
+  }
+  .nav-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.15);
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  .nav-dot.active { background: var(--accent); box-shadow: 0 0 12px var(--glow); width: 24px; border-radius: 4px; }
+  .nav-page {
+    color: var(--text2);
+    font-size: 13px;
+    font-weight: 500;
+    min-width: 50px;
+    text-align: center;
+  }
+
+  /* ===== SLIDE CONTENT ===== */
+  .slide-content {
+    max-width: 1100px;
+    width: 100%;
+    position: relative;
+    z-index: 1;
+  }
+
+  h1 {
+    font-size: clamp(42px, 5vw, 72px);
+    font-weight: 900;
+    background: linear-gradient(135deg, #fff 0%, #6c5ce7 50%, #00cec9 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.2;
+  }
+  h2 {
+    font-size: clamp(28px, 3.5vw, 48px);
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 16px;
+    line-height: 1.3;
+  }
+  h2 .highlight {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  h3 {
+    font-size: 20px;
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 8px;
+  }
+  p, .body-text {
+    font-size: 16px;
+    line-height: 1.8;
+    color: var(--text2);
+    font-weight: 300;
+  }
+  .body-text strong { color: var(--text); font-weight: 500; }
+
+  /* Subtitle */
+  .subtitle {
+    font-size: 18px;
+    color: var(--text2);
+    font-weight: 300;
+    margin-top: 12px;
+    letter-spacing: 1px;
+  }
+  .tagline {
+    display: inline-block;
+    background: rgba(108,92,231,0.15);
+    border: 1px solid rgba(108,92,231,0.3);
+    color: var(--accent);
+    padding: 6px 18px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 16px;
+  }
+
+  /* ===== CARDS ===== */
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    margin-top: 24px;
+  }
+  .card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 16px;
+    padding: 24px;
+    transition: all 0.3s;
+  }
+  .card:hover {
+    border-color: rgba(108,92,231,0.3);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(108,92,231,0.1);
+  }
+  .card .icon {
+    font-size: 32px;
+    margin-bottom: 12px;
+    display: block;
+  }
+  .card h4 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 6px;
+  }
+  .card p {
+    font-size: 13px;
+    color: var(--text2);
+    line-height: 1.6;
+  }
+  .card .num {
+    font-size: 36px;
+    font-weight: 900;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 4px;
+  }
+
+  /* ===== ARCHITECTURE FLOW ===== */
+  .arch-flow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin: 30px 0;
+    flex-wrap: wrap;
+  }
+  .arch-box {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(108,92,231,0.2);
+    border-radius: 14px;
+    padding: 18px 22px;
+    text-align: center;
+    min-width: 140px;
+    flex: 1;
+  }
+  .arch-box .label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #fff;
+  }
+  .arch-box .desc {
+    font-size: 12px;
+    color: var(--text2);
+    margin-top: 4px;
+  }
+  .arch-box:nth-child(1) { border-color: rgba(108,92,231,0.4); }
+  .arch-box:nth-child(3) { border-color: rgba(0,206,201,0.4); }
+  .arch-box:nth-child(5) { border-color: rgba(253,121,168,0.4); }
+  .arch-box:nth-child(7) { border-color: rgba(255,165,2,0.4); }
+  .arch-arrow {
+    color: var(--accent);
+    font-size: 22px;
+    opacity: 0.6;
+  }
+
+  /* ===== COMPARISON TABLE ===== */
+  .compare-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin-top: 20px;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .compare-table th {
+    background: rgba(108,92,231,0.15);
+    color: var(--text);
+    font-weight: 600;
+    font-size: 14px;
+    padding: 14px 18px;
+    text-align: left;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .compare-table td {
+    padding: 12px 18px;
+    font-size: 14px;
+    color: var(--text2);
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+  .compare-table tr:last-child td { border-bottom: none; }
+  .compare-table tr:hover td { background: rgba(255,255,255,0.02); }
+  .compare-table .highlight-cell { color: var(--accent2); font-weight: 500; }
+
+  /* ===== TIMELINE ===== */
+  .timeline {
+    display: flex;
+    gap: 0;
+    margin: 30px 0;
+    position: relative;
+  }
+  .timeline::before {
+    content: '';
+    position: absolute;
+    top: 28px;
+    left: 40px;
+    right: 40px;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2), var(--accent3));
+    opacity: 0.3;
+  }
+  .tl-item {
+    flex: 1;
+    text-align: center;
+    position: relative;
+    padding: 0 10px;
+  }
+  .tl-dot {
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    margin: 0 auto 12px;
+    position: relative;
+    z-index: 2;
+  }
+  .tl-item:nth-child(1) .tl-dot { background: var(--accent); box-shadow: 0 0 20px var(--glow); }
+  .tl-item:nth-child(2) .tl-dot { background: var(--accent2); }
+  .tl-item:nth-child(3) .tl-dot { background: var(--accent3); }
+  .tl-item:nth-child(4) .tl-dot { background: #ffa502; }
+  .tl-phase {
+    font-size: 14px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 4px;
+  }
+  .tl-desc {
+    font-size: 12px;
+    color: var(--text2);
+    line-height: 1.5;
+  }
+  .tl-status {
+    font-size: 11px;
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 10px;
+    margin-top: 6px;
+  }
+  .tl-status.done { background: rgba(0,206,201,0.15); color: var(--accent2); }
+  .tl-status.next { background: rgba(108,92,231,0.15); color: var(--accent); }
+  .tl-status.future { background: rgba(255,255,255,0.06); color: var(--text2); }
+
+  /* ===== CENTERED LAYOUT ===== */
+  .center-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  /* ===== GLOW ===== */
+  .glow-text {
+    text-shadow: 0 0 40px rgba(108,92,231,0.3);
+  }
+
+  /* ===== DIVIDER ===== */
+  .divider {
+    width: 60px;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 2px;
+    margin: 16px 0 20px;
+  }
+
+  /* ===== BADGE ROW ===== */
+  .badge-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+  }
+  .badge {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px;
+    padding: 6px 14px;
+    font-size: 13px;
+    color: var(--text2);
+  }
+  .badge.ai { border-color: rgba(108,92,231,0.3); color: var(--accent); }
+  .badge.green { border-color: rgba(0,206,201,0.3); color: var(--accent2); }
+
+  /* ===== QUOTE / CASE ===== */
+  .case-box {
+    background: linear-gradient(135deg, rgba(108,92,231,0.08), rgba(0,206,201,0.08));
+    border: 1px solid rgba(108,92,231,0.2);
+    border-radius: 20px;
+    padding: 30px;
+    margin-top: 20px;
+  }
+  .case-box .case-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #fff;
+  }
+  .case-box .case-desc {
+    font-size: 14px;
+    color: var(--text2);
+    margin-top: 8px;
+    line-height: 1.8;
+  }
+  .case-flow {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 16px;
+    flex-wrap: wrap;
+  }
+  .case-flow span {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-size: 13px;
+    color: var(--text);
+  }
+  .case-flow .arrow { border: none; background: none; color: var(--accent); font-size: 18px; padding: 0; }
+
+  /* ===== SCROLLBAR ===== */
+  .slide::-webkit-scrollbar { width: 4px; }
+  .slide::-webkit-scrollbar-track { background: transparent; }
+  .slide::-webkit-scrollbar-thumb { background: rgba(108,92,231,0.3); border-radius: 2px; }
+
+  /* ===== TWO COLUMN ===== */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    margin-top: 20px;
+  }
+
+  /* ===== PRICING ===== */
+  .pricing-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-top: 20px;
+  }
+  .pricing-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 16px;
+    padding: 20px;
+    text-align: center;
+    transition: all 0.3s;
+  }
+  .pricing-card.featured {
+    border-color: var(--accent);
+    background: rgba(108,92,231,0.06);
+    transform: scale(1.05);
+  }
+  .pricing-card .plan-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text2);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .pricing-card .price {
+    font-size: 28px;
+    font-weight: 900;
+    color: #fff;
+    margin: 8px 0;
+  }
+  .pricing-card .price span {
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--text2);
+  }
+  .pricing-card .features {
+    font-size: 13px;
+    color: var(--text2);
+    line-height: 2;
+  }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 768px) {
+    .slide { padding: 30px 24px; }
+    .card-grid { grid-template-columns: 1fr 1fr; }
+    .two-col { grid-template-columns: 1fr; }
+    .pricing-grid { grid-template-columns: 1fr 1fr; }
+    .arch-flow { flex-direction: column; }
+    .arch-arrow { transform: rotate(90deg); }
+    .timeline { flex-direction: column; gap: 16px; }
+    .timeline::before { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Particles -->
+<div id="particles"></div>
+<div class="grid-bg"></div>
+
+<!-- ===== SLIDES ===== -->
+<div class="slides">
+
+<!-- SLIDE 1: COVER -->
+<div class="slide active" data-slide="0">
+  <div class="slide-content center-content">
+    <div class="tagline">🚀 AI Native · 零代码 · 秒级交付</div>
+    <h1 class="glow-text">AI快速生成平台</h1>
+    <p class="subtitle">输入一句话需求，AI 自动生成可部署的完整应用</p>
+    <div style="margin-top: 40px; display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;">
+      <span class="badge ai">🤖 AI原生架构</span>
+      <span class="badge green">⚡ 30秒出原型</span>
+      <span class="badge">🎯 零技术门槛</span>
+      <span class="badge">🚀 一键部署</span>
+    </div>
+    <div style="margin-top: 50px; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 24px; width: 100%; max-width: 500px; display: flex; justify-content: space-between;">
+      <span style="color: var(--text2); font-size: 13px;">📅 2026年6月</span>
+      <span style="color: var(--text2); font-size: 13px;">👤 娜娜 · 产品经理</span>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 2: 问题 -->
+<div class="slide" data-slide="1">
+  <div class="slide-content">
+    <div class="tagline">💡 为什么需要这个平台</div>
+    <h2>传统软件开发，<span class="highlight">太慢了</span></h2>
+    <div class="divider"></div>
+    <p class="body-text" style="max-width: 700px;">
+      一个简单的管理工具，从需求到上线，平均需要 <strong>2周~3个月</strong>，<br>
+      需要 <strong>产品经理 + 前端 + 后端 + 测试</strong> 完整团队。<br>
+      而现实是——<strong style="color:#fff;">大多数人只想快速验证一个想法。</strong>
+    </p>
+    <div class="two-col" style="margin-top: 30px;">
+      <div style="background: rgba(255,71,87,0.06); border: 1px solid rgba(255,71,87,0.15); border-radius: 16px; padding: 24px;">
+        <h4 style="color: #ff6b81; font-size: 16px; margin-bottom: 12px;">❌ 传统流程</h4>
+        <div style="font-size: 13px; color: var(--text2); line-height: 2.2;">
+          需求文档 → 原型设计 → UI设计 → 前端开发 → 后端开发 → 联调测试 → 部署上线<br>
+          <strong style="color: #ff6b81;">2周~3个月 · 需要完整技术团队</strong>
+        </div>
+      </div>
+      <div style="background: rgba(0,206,201,0.06); border: 1px solid rgba(0,206,201,0.15); border-radius: 16px; padding: 24px;">
+        <h4 style="color: var(--accent2); font-size: 16px; margin-bottom: 12px;">✅ AI 快速生成</h4>
+        <div style="font-size: 13px; color: var(--text2); line-height: 2.2;">
+          一句话说出需求 → AI理解并生成 → 一键部署上线<br>
+          <strong style="color: var(--accent2);">30秒~5分钟 · 零技术门槛</strong>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 3: 产品价值 -->
+<div class="slide" data-slide="2">
+  <div class="slide-content">
+    <div class="tagline">🎯 核心价值主张</div>
+    <h2>从想法到产品，<span class="highlight">只需一句话</span></h2>
+    <div class="divider"></div>
+    <div class="card-grid">
+      <div class="card">
+        <div class="num">01</div>
+        <h4>零门槛</h4>
+        <p>不用学代码、不用拖组件。像跟人说话一样，说出你的需求即可</p>
+      </div>
+      <div class="card">
+        <div class="num">02</div>
+        <h4>秒级交付</h4>
+        <p>30秒生成原型，5分钟拿到可直接使用的工具页面</p>
+      </div>
+      <div class="card">
+        <div class="num">03</div>
+        <h4>AI原生</h4>
+        <p>非传统低代码套壳，核心引擎是AI推理，理解意图、生成代码、动态渲染</p>
+      </div>
+      <div class="card">
+        <div class="num">04</div>
+        <h4>即用即走</h4>
+        <p>生成即部署，获得在线链接即可使用。也可导出源码二次开发</p>
+      </div>
+    </div>
+    <div class="badge-row" style="margin-top: 24px; justify-content: center;">
+      <span class="badge ai">🎯 产品经理</span>
+      <span class="badge ai">🏢 中小企业主</span>
+      <span class="badge ai">📊 运营/行政</span>
+      <span class="badge ai">👨‍💻 个人开发者</span>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 4: 产品架构 -->
+<div class="slide" data-slide="3">
+  <div class="slide-content">
+    <div class="tagline">🏗️ 系统设计</div>
+    <h2>产品架构：<span class="highlight">四层闭环</span></h2>
+    <div class="divider"></div>
+    <div class="arch-flow">
+      <div class="arch-box">
+        <div class="label">🗣️ 用户输入</div>
+        <div class="desc">一句话需求 · 描述 · 截图</div>
+      </div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-box">
+        <div class="label">🧠 AI推理引擎</div>
+        <div class="desc">需求理解 → 架构规划 → 代码生成</div>
+      </div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-box">
+        <div class="label">📦 内容交付</div>
+        <div class="desc">看板 · 表单 · 工作台 · 报表</div>
+      </div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-box">
+        <div class="label">🚀 部署交付</div>
+        <div class="desc">一键部署 · 在线链接 · 可分享</div>
+      </div>
+    </div>
+    <div class="card-grid" style="margin-top: 24px;">
+      <div class="card" style="padding: 18px;">
+        <h4>🧠 智能需求理解</h4>
+        <p>自然语言解析，自动识别页面类型、功能模块和数据关系</p>
+      </div>
+      <div class="card" style="padding: 18px;">
+        <h4>📋 多类型页面生成</h4>
+        <p>看板/表单/工作台/报表，AI动态生成任意工具界面</p>
+      </div>
+      <div class="card" style="padding: 18px;">
+        <h4>💾 数据管理</h4>
+        <p>自动建表、增删改查、导入导出，开箱即用</p>
+      </div>
+      <div class="card" style="padding: 18px;">
+        <h4>⚡ 一键部署</h4>
+        <p>生成即上线，秒级获取可访问在线链接</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 5: 对比优势 -->
+<div class="slide" data-slide="4">
+  <div class="slide-content">
+    <div class="tagline">⚖️ 差异化定位</div>
+    <h2>与传统低代码的<span class="highlight">本质区别</span></h2>
+    <div class="divider"></div>
+    <table class="compare-table">
+      <thead>
+        <tr>
+          <th style="width:25%;">对比维度</th>
+          <th style="width:37%;">传统低代码平台</th>
+          <th style="width:38%;" class="highlight-cell">AI快速生成平台</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>操作方式</td>
+          <td>拖拽组件、配置表单</td>
+          <td class="highlight-cell">说话就行</td>
+        </tr>
+        <tr>
+          <td>学习成本</td>
+          <td>需学习平台操作和组件逻辑</td>
+          <td class="highlight-cell">零学习成本</td>
+        </tr>
+        <tr>
+          <td>生成速度</td>
+          <td>小时级（拖拽+配置）</td>
+          <td class="highlight-cell">秒级（AI自动生成）</td>
+        </tr>
+        <tr>
+          <td>灵活度</td>
+          <td>固定的组件库，有限组合</td>
+          <td class="highlight-cell">AI动态生成任意界面</td>
+        </tr>
+        <tr>
+          <td>技术门槛</td>
+          <td>需理解业务逻辑和数据结构</td>
+          <td class="highlight-cell">零技术基础可用</td>
+        </tr>
+        <tr>
+          <td>核心引擎</td>
+          <td>可视化配置引擎</td>
+          <td class="highlight-cell">AI大模型推理引擎</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- SLIDE 6: 应用场景 -->
+<div class="slide" data-slide="5">
+  <div class="slide-content">
+    <div class="tagline">🎬 实际用例</div>
+    <h2>一句话能做什么？</h2>
+    <div class="divider"></div>
+    <div class="card-grid" style="grid-template-columns: repeat(2, 1fr);">
+      <div class="card" style="border-left: 3px solid var(--accent);">
+        <h4>🏢 客户管理系统</h4>
+        <p style="font-size:12px; color:var(--accent); margin-bottom:8px;">输入→</p>
+        <p style="font-size:13px;">"帮我做一个客户管理系统，要有客户列表、添加客户、跟进记录和成交统计"</p>
+        <p style="font-size:12px; color:var(--accent2); margin-top:8px;">→ 30秒生成完整CRM系统</p>
+      </div>
+      <div class="card" style="border-left: 3px solid var(--accent2);">
+        <h4>📊 项目进度看板</h4>
+        <p style="font-size:12px; color:var(--accent2); margin-bottom:8px;">输入→</p>
+        <p style="font-size:13px;">"做一个项目进度看板，能看到每个任务的负责人、截止日期和完成状态"</p>
+        <p style="font-size:12px; color:var(--accent2); margin-top:8px;">→ 自动生成Kanban看板</p>
+      </div>
+      <div class="card" style="border-left: 3px solid var(--accent3);">
+        <h4>📝 在线调查表</h4>
+        <p style="font-size:12px; color:var(--accent3); margin-bottom:8px;">输入→</p>
+        <p style="font-size:13px;">"帮我生成一个员工满意度调查表，包含单选、多选和评分题型"</p>
+        <p style="font-size:12px; color:var(--accent2); margin-top:8px;">→ 生成可在线填写的表单</p>
+      </div>
+      <div class="card" style="border-left: 3px solid #ffa502;">
+        <h4>📦 库存管理工具</h4>
+        <p style="font-size:12px; color:#ffa502; margin-bottom:8px;">输入→</p>
+        <p style="font-size:13px;">"做一个库存管理页面，能扫码入库、查询库存、设置预警"</p>
+        <p style="font-size:12px; color:var(--accent2); margin-top:8px;">→ 生成仓库管理工具</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 7: 技术方案 -->
+<div class="slide" data-slide="6">
+  <div class="slide-content">
+    <div class="tagline">🔧 技术实现</div>
+    <h2>轻量而强大的<span class="highlight">技术栈</span></h2>
+    <div class="divider"></div>
+    <div class="two-col">
+      <div>
+        <div class="card-grid" style="grid-template-columns: 1fr;">
+          <div class="card" style="padding: 16px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <h4>🌐 前端</h4>
+              <span class="badge ai">Next.js + React</span>
+            </div>
+          </div>
+          <div class="card" style="padding: 16px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <h4>🎨 UI</h4>
+              <span class="badge green">Tailwind CSS + shadcn/ui</span>
+            </div>
+          </div>
+          <div class="card" style="padding: 16px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <h4>🧠 AI引擎</h4>
+              <span class="badge ai">GPT-5.5 / 大模型API</span>
+            </div>
+          </div>
+          <div class="card" style="padding: 16px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <h4>🚀 部署</h4>
+              <span class="badge green">Vercel · 一键自动部署</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style="display: flex; flex-direction: column; justify-content: center;">
+        <h3 style="margin-bottom: 12px;">架构亮点</h3>
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+          <div style="background: rgba(255,255,255,0.03); border-radius: 10px; padding: 12px 16px; border-left: 3px solid var(--accent);">
+            <strong style="color:#fff; font-size:14px;">AI Native</strong>
+            <p style="font-size:13px; margin-top:2px;">核心是AI推理，不是传统代码逻辑</p>
+          </div>
+          <div style="background: rgba(255,255,255,0.03); border-radius: 10px; padding: 12px 16px; border-left: 3px solid var(--accent2);">
+            <strong style="color:#fff; font-size:14px;">动态渲染</strong>
+            <p style="font-size:13px; margin-top:2px;">页面根据AI解析结果实时生成，非写死模板</p>
+          </div>
+          <div style="background: rgba(255,255,255,0.03); border-radius: 10px; padding: 12px 16px; border-left: 3px solid var(--accent3);">
+            <strong style="color:#fff; font-size:14px;">渐进式交付</strong>
+            <p style="font-size:13px; margin-top:2px;">从一句话MVP开始，不断迭代完善</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 8: 案例 - 起重机 -->
+<div class="slide" data-slide="7">
+  <div class="slide-content">
+    <div class="tagline">🏆 典型落地案例</div>
+    <h2>起重机生产制造<span class="highlight">报价系统</span></h2>
+    <div class="divider"></div>
+    <p class="body-text" style="max-width: 700px;">
+      平台能力的真实验证——将传统需要工程师<strong>人工查询参数、手工计算报价</strong>（耗时数小时）的流程，<br>
+      缩短到 <strong style="color: var(--accent2);">30分钟内完成从需求理解到报价输出</strong>。
+    </p>
+    <div class="case-box">
+      <div class="case-title">产品架构</div>
+      <div class="case-flow">
+        <span>📦 配件库管理</span>
+        <span class="arrow">→</span>
+        <span>🧠 AI智能推理</span>
+        <span class="arrow">→</span>
+        <span>📄 报价/报告交付</span>
+      </div>
+      <div class="case-desc" style="margin-top: 16px;">
+        <strong style="color:#fff;">核心流程：</strong> 用户输入起重机参数 → AI自动匹配配件库 → 智能计算报价 → 生成特检申报报告
+      </div>
+    </div>
+    <div class="card-grid" style="grid-template-columns: repeat(3, 1fr); margin-top: 20px;">
+      <div class="card" style="text-align:center; padding: 16px;">
+        <div class="num" style="font-size:28px;">⏱️ 数小时 → 30分钟</div>
+        <p>效率提升</p>
+      </div>
+      <div class="card" style="text-align:center; padding: 16px;">
+        <div class="num" style="font-size:28px;">🤖 AI自动匹配</div>
+        <p>配件库智能推理</p>
+      </div>
+      <div class="card" style="text-align:center; padding: 16px;">
+        <div class="num" style="font-size:28px;">📄 一键输出</div>
+        <p>报价+申报报告</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 9: 路线图 -->
+<div class="slide" data-slide="8">
+  <div class="slide-content">
+    <div class="tagline">🗺️ 实施计划</div>
+    <h2>四阶段 <span class="highlight">落地路线</span></h2>
+    <div class="divider"></div>
+    <div class="timeline">
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-phase">Phase 1</div>
+        <div class="tl-desc">MVP验证<br>一句话→看板生成</div>
+        <div class="tl-status done">✅ 已完成</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-phase">Phase 2</div>
+        <div class="tl-desc">能力扩展<br>多页面+数据持久化</div>
+        <div class="tl-status next">⏳ 2周</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-phase">Phase 3</div>
+        <div class="tl-desc">体验升级<br>对话式+在线编辑+模板</div>
+        <div class="tl-status future">📅 4周</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-phase">Phase 4</div>
+        <div class="tl-desc">商业变现<br>订阅+协作+私有部署</div>
+        <div class="tl-status future">📅 8周</div>
+      </div>
+    </div>
+    <div style="margin-top: 24px; background: rgba(108,92,231,0.06); border: 1px solid rgba(108,92,231,0.15); border-radius: 12px; padding: 16px 20px; display: flex; align-items: center; gap: 12px;">
+      <span style="font-size: 28px;">🌐</span>
+      <div>
+        <div style="font-size: 14px; font-weight: 600; color: #fff;">当前线上版本</div>
+        <div style="font-size: 13px; color: var(--accent);">https://ai-tau-jet-97.vercel.app/</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 10: 商业化 -->
+<div class="slide" data-slide="9">
+  <div class="slide-content">
+    <div class="tagline">💰 商业模型</div>
+    <h2><span class="highlight">分层定价</span>，覆盖全场景</h2>
+    <div class="divider"></div>
+    <div class="pricing-grid">
+      <div class="pricing-card">
+        <div class="plan-name">免费版</div>
+        <div class="price">¥0 <span>/月</span></div>
+        <div class="features">
+          10次生成<br>
+          3个部署<br>
+          100条数据
+        </div>
+      </div>
+      <div class="pricing-card featured">
+        <div class="plan-name">⭐ 专业版</div>
+        <div class="price">¥99 <span>/月</span></div>
+        <div class="features">
+          100次生成<br>
+          不限部署<br>
+          10万条数据
+        </div>
+      </div>
+      <div class="pricing-card">
+        <div class="plan-name">企业版</div>
+        <div class="price">¥499 <span>/月</span></div>
+        <div class="features">
+          不限生成<br>
+          不限部署<br>
+          不限存储
+        </div>
+      </div>
+      <div class="pricing-card" style="border-color: rgba(0,206,201,0.3);">
+        <div class="plan-name">🏢 私有部署</div>
+        <div class="price">按需 <span>报价</span></div>
+        <div class="features">
+          私有服务器<br>
+          定制开发<br>
+          专属支持
+        </div>
+      </div>
+    </div>
+    <div style="margin-top: 24px; display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
+      <div style="text-align:center;">
+        <div style="font-size: 13px; color: var(--text2);">🎯 目标市场</div>
+        <div style="font-size: 14px; color: #fff; font-weight: 500; margin-top: 4px;">中小企业 · 个人创作者 · 教育培训 · 企业培训</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 11: 团队 -->
+<div class="slide" data-slide="10">
+  <div class="slide-content">
+    <div class="tagline">👥 团队与协作</div>
+    <h2>人 + AI 的 <span class="highlight">超级流水线</span></h2>
+    <div class="divider"></div>
+    <div class="arch-flow" style="margin-top: 20px;">
+      <div class="arch-box" style="border-color: var(--accent);">
+        <div class="label">👤 娜娜</div>
+        <div class="desc">产品经理 · 需求定义</div>
+      </div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-box" style="border-color: var(--accent2);">
+        <div class="label">🧠 Hermes</div>
+        <div class="desc">超级大脑 · 规划管理</div>
+      </div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-box" style="border-color: var(--accent3);">
+        <div class="label">🛠️ Codex</div>
+        <div class="desc">核心执行 · 代码生成</div>
+      </div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-box" style="border-color: #ffa502;">
+        <div class="label">🚀 Vercel</div>
+        <div class="desc">自动化部署上线</div>
+      </div>
+    </div>
+    <div style="margin-top: 24px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 20px; text-align: center;">
+      <p class="body-text" style="font-size: 15px;">
+        <strong style="color: #fff;">你一句话</strong> → Hermes 分析规划 → Codex 核心执行 → GitHub 托管 → Vercel 部署 → <strong style="color: var(--accent2);">你拿到可分享的链接</strong>
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 12: 结尾 -->
+<div class="slide" data-slide="11">
+  <div class="slide-content center-content">
+    <div class="tagline">🌐 立即体验</div>
+    <h1 class="glow-text" style="font-size: clamp(36px, 4vw, 56px);">从想法到产品</h1>
+    <h1 class="glow-text" style="font-size: clamp(36px, 4vw, 56px); margin-top: -8px;">只需 <span style="background: linear-gradient(135deg, var(--accent2), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">一句话</span></h1>
+    <p class="subtitle">AI快速生成平台 · 让每个人都能创造自己的软件工具</p>
+    <div style="margin-top: 40px; display: flex; gap: 16px; flex-wrap: wrap; justify-content: center;">
+      <a href="https://ai-tau-jet-97.vercel.app/" target="_blank" style="display: inline-block; background: linear-gradient(135deg, var(--accent), #8b7cf7); color: #fff; padding: 14px 36px; border-radius: 40px; text-decoration: none; font-size: 16px; font-weight: 600; box-shadow: 0 8px 30px rgba(108,92,231,0.3);">🚀 立即体验</a>
+    </div>
+    <div style="margin-top: 50px; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 20px; width: 100%; max-width: 400px;">
+      <p style="font-size: 13px; color: var(--text2); text-align: center;">
+        🤖 本演示文稿由 Hermes Agent 自动生成<br>
+        <span style="font-size: 11px;">项目方案 · 2026年6月</span>
+      </p>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<!-- ===== NAVIGATION ===== -->
+<div class="nav">
+  <button class="nav-btn" id="prevBtn">◀</button>
+  <div class="nav-dots" id="dots"></div>
+  <span class="nav-page" id="pageNum">1 / 12</span>
+  <button class="nav-btn" id="nextBtn">▶</button>
+</div>
+
+<script>
+  (function(){
+    const slides = document.querySelectorAll('.slide');
+    const total = slides.length;
+    let current = 0;
+
+    function goTo(idx) {
+      if (idx < 0 || idx >= total) return;
+      slides.forEach(s => s.classList.remove('active'));
+      slides[idx].classList.add('active');
+      current = idx;
+      updateNav();
+
+      // Scroll to top of slide
+      slides[idx].scrollTop = 0;
+    }
+
+    function updateNav() {
+      document.querySelectorAll('.nav-dot').forEach((dot, i) => {
+        dot.classList.toggle('active', i === current);
+      });
+      document.getElementById('pageNum').textContent = `${current + 1} / ${total}`;
+    }
+
+    // Create dots
+    const dotsContainer = document.getElementById('dots');
+    for (let i = 0; i < total; i++) {
+      const dot = document.createElement('div');
+      dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
+      dot.addEventListener('click', () => goTo(i));
+      dotsContainer.appendChild(dot);
+    }
+
+    document.getElementById('prevBtn').addEventListener('click', () => goTo(current - 1));
+    document.getElementById('nextBtn').addEventListener('click', () => goTo(current + 1));
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') {
+        e.preventDefault();
+        goTo(current + 1);
+      } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+        e.preventDefault();
+        goTo(current - 1);
+      } else if (e.key === 'Home') {
+        e.preventDefault();
+        goTo(0);
+      } else if (e.key === 'End') {
+        e.preventDefault();
+        goTo(total - 1);
+      }
+    });
+
+    // Touch support
+    let touchStartX = 0;
+    document.addEventListener('touchstart', (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+    });
+    document.addEventListener('touchend', (e) => {
+      const diff = touchStartX - e.changedTouches[0].screenX;
+      if (Math.abs(diff) > 50) {
+        if (diff > 0) goTo(current + 1);
+        else goTo(current - 1);
+      }
+    });
+
+    // Particle generation
+    const particles = document.getElementById('particles');
+    for (let i = 0; i < 30; i++) {
+      const p = document.createElement('div');
+      p.className = 'particle';
+      const size = Math.random() * 80 + 20;
+      p.style.width = size + 'px';
+      p.style.height = size + 'px';
+      p.style.left = Math.random() * 100 + '%';
+      p.style.top = Math.random() * 100 + '%';
+      p.style.animationDelay = Math.random() * 20 + 's';
+      p.style.animationDuration = (Math.random() * 20 + 15) + 's';
+      particles.appendChild(p);
+    }
+  })();
+</script>
+
+</body>
+</html>
