@@ -3,994 +3,460 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AI快速生成平台 — 项目方案</title>
+<title>瞬搭 · AI快速生成平台 — 商业计划书</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap');
-
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-
-  :root {
-    --bg: #0a0a1a;
-    --surface: #111128;
-    --surface2: #1a1a3e;
-    --accent: #6c5ce7;
-    --accent2: #00cec9;
-    --accent3: #fd79a8;
-    --text: #e8e8f0;
-    --text2: #8888aa;
-    --glow: rgba(108, 92, 231, 0.3);
-  }
-
-  body {
-    font-family: 'Noto Sans SC', -apple-system, sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    overflow: hidden;
-    height: 100vh;
-    width: 100vw;
-  }
-
-  /* ===== SLIDE CONTAINER ===== */
-  .slides {
-    height: 100vh;
-    width: 100vw;
-    position: relative;
-  }
-
-  .slide {
-    position: absolute;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 60px 80px;
-    opacity: 0;
-    transform: scale(0.95);
-    transition: opacity 0.6s ease, transform 0.6s ease;
-    pointer-events: none;
-    overflow-y: auto;
-  }
-  .slide.active {
-    opacity: 1;
-    transform: scale(1);
-    pointer-events: auto;
-    z-index: 10;
-  }
-
-  /* ===== BACKGROUND PARTICLES ===== */
-  #particles {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    pointer-events: none;
-    z-index: 0;
-    overflow: hidden;
-  }
-  .particle {
-    position: absolute;
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    opacity: 0.15;
-    animation: float 20s infinite ease-in-out;
-  }
-  @keyframes float {
-    0%, 100% { transform: translateY(0) translateX(0); }
-    25% { transform: translateY(-80px) translateX(40px); }
-    50% { transform: translateY(-40px) translateX(-30px); }
-    75% { transform: translateY(-100px) translateX(20px); }
-  }
-
-  /* ===== GRID BACKGROUND ===== */
-  .grid-bg {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background-image:
-      linear-gradient(rgba(108,92,231,0.04) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(108,92,231,0.04) 1px, transparent 1px);
-    background-size: 60px 60px;
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  /* ===== NAVIGATION ===== */
-  .nav {
-    position: fixed;
-    bottom: 30px;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    z-index: 100;
-    background: rgba(17,17,40,0.8);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 40px;
-    padding: 10px 24px;
-  }
-  .nav-btn {
-    background: none;
-    border: 1px solid rgba(255,255,255,0.15);
-    color: var(--text2);
-    width: 36px; height: 36px;
-    border-radius: 50%;
-    cursor: pointer;
-    font-size: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s;
-  }
-  .nav-btn:hover { border-color: var(--accent); color: var(--text); }
-  .nav-dots {
-    display: flex;
-    gap: 6px;
-    margin: 0 8px;
-  }
-  .nav-dot {
-    width: 8px; height: 8px;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.15);
-    cursor: pointer;
-    transition: all 0.3s;
-  }
-  .nav-dot.active { background: var(--accent); box-shadow: 0 0 12px var(--glow); width: 24px; border-radius: 4px; }
-  .nav-page {
-    color: var(--text2);
-    font-size: 13px;
-    font-weight: 500;
-    min-width: 50px;
-    text-align: center;
-  }
-
-  /* ===== SLIDE CONTENT ===== */
-  .slide-content {
-    max-width: 1100px;
-    width: 100%;
-    position: relative;
-    z-index: 1;
-  }
-
-  h1 {
-    font-size: clamp(42px, 5vw, 72px);
-    font-weight: 900;
-    background: linear-gradient(135deg, #fff 0%, #6c5ce7 50%, #00cec9 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    line-height: 1.2;
-  }
-  h2 {
-    font-size: clamp(28px, 3.5vw, 48px);
-    font-weight: 700;
-    color: #fff;
-    margin-bottom: 16px;
-    line-height: 1.3;
-  }
-  h2 .highlight {
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-  h3 {
-    font-size: 20px;
-    font-weight: 600;
-    color: #fff;
-    margin-bottom: 8px;
-  }
-  p, .body-text {
-    font-size: 16px;
-    line-height: 1.8;
-    color: var(--text2);
-    font-weight: 300;
-  }
-  .body-text strong { color: var(--text); font-weight: 500; }
-
-  /* Subtitle */
-  .subtitle {
-    font-size: 18px;
-    color: var(--text2);
-    font-weight: 300;
-    margin-top: 12px;
-    letter-spacing: 1px;
-  }
-  .tagline {
-    display: inline-block;
-    background: rgba(108,92,231,0.15);
-    border: 1px solid rgba(108,92,231,0.3);
-    color: var(--accent);
-    padding: 6px 18px;
-    border-radius: 20px;
-    font-size: 13px;
-    font-weight: 500;
-    margin-bottom: 16px;
-  }
-
-  /* ===== CARDS ===== */
-  .card-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 16px;
-    margin-top: 24px;
-  }
-  .card {
-    background: rgba(255,255,255,0.03);
-    border: 1px solid rgba(255,255,255,0.06);
-    border-radius: 16px;
-    padding: 24px;
-    transition: all 0.3s;
-  }
-  .card:hover {
-    border-color: rgba(108,92,231,0.3);
-    transform: translateY(-4px);
-    box-shadow: 0 12px 40px rgba(108,92,231,0.1);
-  }
-  .card .icon {
-    font-size: 32px;
-    margin-bottom: 12px;
-    display: block;
-  }
-  .card h4 {
-    font-size: 16px;
-    font-weight: 600;
-    color: #fff;
-    margin-bottom: 6px;
-  }
-  .card p {
-    font-size: 13px;
-    color: var(--text2);
-    line-height: 1.6;
-  }
-  .card .num {
-    font-size: 36px;
-    font-weight: 900;
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    margin-bottom: 4px;
-  }
-
-  /* ===== ARCHITECTURE FLOW ===== */
-  .arch-flow {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-    margin: 30px 0;
-    flex-wrap: wrap;
-  }
-  .arch-box {
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(108,92,231,0.2);
-    border-radius: 14px;
-    padding: 18px 22px;
-    text-align: center;
-    min-width: 140px;
-    flex: 1;
-  }
-  .arch-box .label {
-    font-size: 14px;
-    font-weight: 600;
-    color: #fff;
-  }
-  .arch-box .desc {
-    font-size: 12px;
-    color: var(--text2);
-    margin-top: 4px;
-  }
-  .arch-box:nth-child(1) { border-color: rgba(108,92,231,0.4); }
-  .arch-box:nth-child(3) { border-color: rgba(0,206,201,0.4); }
-  .arch-box:nth-child(5) { border-color: rgba(253,121,168,0.4); }
-  .arch-box:nth-child(7) { border-color: rgba(255,165,2,0.4); }
-  .arch-arrow {
-    color: var(--accent);
-    font-size: 22px;
-    opacity: 0.6;
-  }
-
-  /* ===== COMPARISON TABLE ===== */
-  .compare-table {
-    width: 100%;
-    border-collapse: separate;
-    border-spacing: 0;
-    margin-top: 20px;
-    border-radius: 12px;
-    overflow: hidden;
-  }
-  .compare-table th {
-    background: rgba(108,92,231,0.15);
-    color: var(--text);
-    font-weight: 600;
-    font-size: 14px;
-    padding: 14px 18px;
-    text-align: left;
-    border-bottom: 1px solid rgba(255,255,255,0.06);
-  }
-  .compare-table td {
-    padding: 12px 18px;
-    font-size: 14px;
-    color: var(--text2);
-    border-bottom: 1px solid rgba(255,255,255,0.04);
-  }
-  .compare-table tr:last-child td { border-bottom: none; }
-  .compare-table tr:hover td { background: rgba(255,255,255,0.02); }
-  .compare-table .highlight-cell { color: var(--accent2); font-weight: 500; }
-
-  /* ===== TIMELINE ===== */
-  .timeline {
-    display: flex;
-    gap: 0;
-    margin: 30px 0;
-    position: relative;
-  }
-  .timeline::before {
-    content: '';
-    position: absolute;
-    top: 28px;
-    left: 40px;
-    right: 40px;
-    height: 2px;
-    background: linear-gradient(90deg, var(--accent), var(--accent2), var(--accent3));
-    opacity: 0.3;
-  }
-  .tl-item {
-    flex: 1;
-    text-align: center;
-    position: relative;
-    padding: 0 10px;
-  }
-  .tl-dot {
-    width: 16px; height: 16px;
-    border-radius: 50%;
-    margin: 0 auto 12px;
-    position: relative;
-    z-index: 2;
-  }
-  .tl-item:nth-child(1) .tl-dot { background: var(--accent); box-shadow: 0 0 20px var(--glow); }
-  .tl-item:nth-child(2) .tl-dot { background: var(--accent2); }
-  .tl-item:nth-child(3) .tl-dot { background: var(--accent3); }
-  .tl-item:nth-child(4) .tl-dot { background: #ffa502; }
-  .tl-phase {
-    font-size: 14px;
-    font-weight: 700;
-    color: #fff;
-    margin-bottom: 4px;
-  }
-  .tl-desc {
-    font-size: 12px;
-    color: var(--text2);
-    line-height: 1.5;
-  }
-  .tl-status {
-    font-size: 11px;
-    display: inline-block;
-    padding: 2px 10px;
-    border-radius: 10px;
-    margin-top: 6px;
-  }
-  .tl-status.done { background: rgba(0,206,201,0.15); color: var(--accent2); }
-  .tl-status.next { background: rgba(108,92,231,0.15); color: var(--accent); }
-  .tl-status.future { background: rgba(255,255,255,0.06); color: var(--text2); }
-
-  /* ===== CENTERED LAYOUT ===== */
-  .center-content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-  }
-
-  /* ===== GLOW ===== */
-  .glow-text {
-    text-shadow: 0 0 40px rgba(108,92,231,0.3);
-  }
-
-  /* ===== DIVIDER ===== */
-  .divider {
-    width: 60px;
-    height: 3px;
-    background: linear-gradient(90deg, var(--accent), var(--accent2));
-    border-radius: 2px;
-    margin: 16px 0 20px;
-  }
-
-  /* ===== BADGE ROW ===== */
-  .badge-row {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    margin-top: 10px;
-  }
-  .badge {
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 8px;
-    padding: 6px 14px;
-    font-size: 13px;
-    color: var(--text2);
-  }
-  .badge.ai { border-color: rgba(108,92,231,0.3); color: var(--accent); }
-  .badge.green { border-color: rgba(0,206,201,0.3); color: var(--accent2); }
-
-  /* ===== QUOTE / CASE ===== */
-  .case-box {
-    background: linear-gradient(135deg, rgba(108,92,231,0.08), rgba(0,206,201,0.08));
-    border: 1px solid rgba(108,92,231,0.2);
-    border-radius: 20px;
-    padding: 30px;
-    margin-top: 20px;
-  }
-  .case-box .case-title {
-    font-size: 20px;
-    font-weight: 700;
-    color: #fff;
-  }
-  .case-box .case-desc {
-    font-size: 14px;
-    color: var(--text2);
-    margin-top: 8px;
-    line-height: 1.8;
-  }
-  .case-flow {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-top: 16px;
-    flex-wrap: wrap;
-  }
-  .case-flow span {
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 8px;
-    padding: 8px 16px;
-    font-size: 13px;
-    color: var(--text);
-  }
-  .case-flow .arrow { border: none; background: none; color: var(--accent); font-size: 18px; padding: 0; }
-
-  /* ===== SCROLLBAR ===== */
-  .slide::-webkit-scrollbar { width: 4px; }
-  .slide::-webkit-scrollbar-track { background: transparent; }
-  .slide::-webkit-scrollbar-thumb { background: rgba(108,92,231,0.3); border-radius: 2px; }
-
-  /* ===== TWO COLUMN ===== */
-  .two-col {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 30px;
-    margin-top: 20px;
-  }
-
-  /* ===== PRICING ===== */
-  .pricing-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 12px;
-    margin-top: 20px;
-  }
-  .pricing-card {
-    background: rgba(255,255,255,0.03);
-    border: 1px solid rgba(255,255,255,0.06);
-    border-radius: 16px;
-    padding: 20px;
-    text-align: center;
-    transition: all 0.3s;
-  }
-  .pricing-card.featured {
-    border-color: var(--accent);
-    background: rgba(108,92,231,0.06);
-    transform: scale(1.05);
-  }
-  .pricing-card .plan-name {
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--text2);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-  }
-  .pricing-card .price {
-    font-size: 28px;
-    font-weight: 900;
-    color: #fff;
-    margin: 8px 0;
-  }
-  .pricing-card .price span {
-    font-size: 14px;
-    font-weight: 400;
-    color: var(--text2);
-  }
-  .pricing-card .features {
-    font-size: 13px;
-    color: var(--text2);
-    line-height: 2;
-  }
-
-  /* ===== RESPONSIVE ===== */
-  @media (max-width: 768px) {
-    .slide { padding: 30px 24px; }
-    .card-grid { grid-template-columns: 1fr 1fr; }
-    .two-col { grid-template-columns: 1fr; }
-    .pricing-grid { grid-template-columns: 1fr 1fr; }
-    .arch-flow { flex-direction: column; }
-    .arch-arrow { transform: rotate(90deg); }
-    .timeline { flex-direction: column; gap: 16px; }
-    .timeline::before { display: none; }
+  *{margin:0;padding:0;box-sizing:border-box}
+  :root{--bg:#060613;--surface:#0c0c24;--surface2:#16163a;--accent:#6c5ce7;--accent2:#00cec9;--accent3:#fd79a8;--orange:#fdcb6e;--text:#e8e8f0;--text2:#8888aa;--glow:rgba(108,92,231,0.25)}
+  body{font-family:'Noto Sans SC',-apple-system,sans-serif;background:var(--bg);color:var(--text);overflow:hidden;height:100vh;width:100vw}
+  .slides{height:100vh;width:100vw;position:relative}
+  .slide{position:absolute;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:50px 70px;opacity:0;transform:scale(.95);transition:opacity .5s ease,transform .5s ease;pointer-events:none;overflow-y:auto}
+  .slide.active{opacity:1;transform:scale(1);pointer-events:auto;z-index:10}
+  .grid-bg{position:fixed;top:0;left:0;width:100%;height:100%;background-image:linear-gradient(rgba(108,92,231,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(108,92,231,.03) 1px,transparent 1px);background-size:50px 50px;pointer-events:none;z-index:0}
+  .glow-orb{position:fixed;border-radius:50%;pointer-events:none;z-index:0;filter:blur(80px);opacity:.2}
+  .glow-orb:nth-child(1){width:400px;height:400px;background:var(--accent);top:-100px;right:-100px}
+  .glow-orb:nth-child(2){width:300px;height:300px;background:var(--accent2);bottom:-50px;left:-50px}
+  .glow-orb:nth-child(3){width:250px;height:250px;background:var(--accent3);top:50%;left:50%;transform:translate(-50%,-50%)}
+  .nav{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:12px;z-index:100;background:rgba(12,12,36,.85);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.08);border-radius:40px;padding:8px 20px}
+  .nav-btn{background:none;border:1px solid rgba(255,255,255,.12);color:var(--text2);width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;transition:all .3s}
+  .nav-btn:hover{border-color:var(--accent);color:var(--text)}
+  .nav-dots{display:flex;gap:5px;margin:0 6px}
+  .nav-dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.12);cursor:pointer;transition:all .3s}
+  .nav-dot.active{background:var(--accent);box-shadow:0 0 10px var(--glow);width:20px;border-radius:3px}
+  .nav-page{color:var(--text2);font-size:12px;font-weight:500;min-width:40px;text-align:center}
+  .slide-content{max-width:1100px;width:100%;position:relative;z-index:1}
+  .center-content{display:flex;flex-direction:column;align-items:center;text-align:center}
+  h1{font-size:clamp(36px,4.5vw,64px);font-weight:900;background:linear-gradient(135deg,#fff 0%,#6c5ce7 40%,#00cec9 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1.2}
+  h2{font-size:clamp(24px,3vw,40px);font-weight:700;color:#fff;margin-bottom:12px;line-height:1.3}
+  h2 .hl{background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+  h3{font-size:18px;font-weight:600;color:#fff;margin-bottom:6px}
+  p,.body-text{font-size:15px;line-height:1.7;color:var(--text2);font-weight:300}
+  .tagline{display:inline-block;background:rgba(108,92,231,.12);border:1px solid rgba(108,92,231,.25);color:var(--accent);padding:5px 16px;border-radius:20px;font-size:12px;font-weight:500;margin-bottom:12px}
+  .subtitle{font-size:16px;color:var(--text2);font-weight:300;margin-top:8px}
+  .divider{width:50px;height:3px;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:2px;margin:12px 0 20px}
+  .card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px;margin-top:20px}
+  .card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:20px;transition:all .3s}
+  .card:hover{border-color:rgba(108,92,231,.3);transform:translateY(-3px);box-shadow:0 10px 30px rgba(108,92,231,.08)}
+  .card .icon{font-size:28px;margin-bottom:8px;display:block}
+  .card h4{font-size:15px;font-weight:600;color:#fff;margin-bottom:4px}
+  .card p{font-size:13px;color:var(--text2);line-height:1.6}
+  .card .big{font-size:32px;font-weight:900;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:2px}
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:16px}
+  .arch-flow{display:flex;align-items:center;justify-content:center;gap:10px;margin:24px 0;flex-wrap:wrap}
+  .arch-box{background:rgba(255,255,255,.03);border:1px solid rgba(108,92,231,.2);border-radius:12px;padding:14px 18px;text-align:center;flex:1;min-width:120px}
+  .arch-box .lbl{font-size:13px;font-weight:600;color:#fff}
+  .arch-box .dsc{font-size:11px;color:var(--text2);margin-top:2px}
+  .arch-arrow{color:var(--accent);font-size:18px;opacity:.5}
+  .badge{display:inline-block;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:6px;padding:4px 12px;font-size:12px;color:var(--text2);margin:2px}
+  .badge.ai{border-color:rgba(108,92,231,.3);color:var(--accent)}
+  .badge.gr{border-color:rgba(0,206,201,.3);color:var(--accent2)}
+  .badge.red{border-color:rgba(253,121,168,.3);color:var(--accent3)}
+  .badge.yl{border-color:rgba(253,203,110,.3);color:var(--orange)}
+  .pricing{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:16px}
+  .pcard{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:16px;text-align:center}
+  .pcard.feat{border-color:var(--accent);background:rgba(108,92,231,.06);transform:scale(1.04)}
+  .pcard .pn{font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.5px}
+  .pcard .pr{font-size:24px;font-weight:900;color:#fff;margin:6px 0}
+  .pcard .pr span{font-size:13px;font-weight:400;color:var(--text2)}
+  .pcard .pf{font-size:12px;color:var(--text2);line-height:2}
+  .tl{display:flex;gap:0;margin:24px 0;position:relative}
+  .tl::before{content:'';position:absolute;top:24px;left:30px;right:30px;height:2px;background:linear-gradient(90deg,var(--accent),var(--accent2),var(--accent3),var(--orange));opacity:.25}
+  .tli{flex:1;text-align:center;position:relative;padding:0 8px}
+  .tli .dot{width:14px;height:14px;border-radius:50%;margin:0 auto 10px;position:relative;z-index:2}
+  .tli:nth-child(1) .dot{background:var(--accent);box-shadow:0 0 16px var(--glow)}
+  .tli:nth-child(2) .dot{background:var(--accent2)}
+  .tli:nth-child(3) .dot{background:var(--accent3)}
+  .tli:nth-child(4) .dot{background:var(--orange)}
+  .tli .ph{font-size:13px;font-weight:700;color:#fff;margin-bottom:2px}
+  .tli .dd{font-size:11px;color:var(--text2);line-height:1.5}
+  .tli .st{font-size:10px;display:inline-block;padding:2px 8px;border-radius:8px;margin-top:4px}
+  .tli:nth-child(1) .st{background:rgba(0,206,201,.12);color:var(--accent2)}
+  .tli:nth-child(2) .st{background:rgba(108,92,231,.12);color:var(--accent)}
+  .tli:nth-child(3) .st,.tli:nth-child(4) .st{background:rgba(255,255,255,.05);color:var(--text2)}
+  table{width:100%;border-collapse:separate;border-spacing:0;margin-top:14px;border-radius:10px;overflow:hidden;font-size:13px}
+  th{background:rgba(108,92,231,.12);color:var(--text);font-weight:600;padding:10px 14px;text-align:left;border-bottom:1px solid rgba(255,255,255,.04)}
+  td{padding:9px 14px;color:var(--text2);border-bottom:1px solid rgba(255,255,255,.03)}
+  tr:hover td{background:rgba(255,255,255,.02)}
+  .hcell{color:var(--accent2);font-weight:500}
+  .kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px}
+  .kpi{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px;text-align:center}
+  .kpi .kv{font-size:22px;font-weight:900;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+  .kpi .kl{font-size:11px;color:var(--text2);margin-top:2px}
+  .case-box{background:linear-gradient(135deg,rgba(108,92,231,.06),rgba(0,206,201,.06));border:1px solid rgba(108,92,231,.15);border-radius:16px;padding:24px;margin-top:16px}
+  .case-flow{display:flex;align-items:center;gap:6px;margin-top:12px;flex-wrap:wrap}
+  .case-flow span{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:6px;padding:6px 12px;font-size:12px;color:var(--text)}
+  .case-flow .ar{border:none;background:none;color:var(--accent);font-size:16px;padding:0}
+  .audience-badge{padding:6px 16px;border-radius:20px;font-size:12px;font-weight:600;display:inline-block}
+  .audience-badge.inv{background:rgba(253,203,110,.12);color:var(--orange);border:1px solid rgba(253,203,110,.2)}
+  .audience-badge.exc{background:rgba(108,92,231,.12);color:var(--accent);border:1px solid rgba(108,92,231,.2)}
+  .audience-badge.cli{background:rgba(0,206,201,.12);color:var(--accent2);border:1px solid rgba(0,206,201,.2)}
+  .risk-table td:first-child{font-weight:500;color:#fff}
+  .risk-table .h{background:rgba(253,121,168,.15);color:var(--accent3)}
+  .risk-table .m{background:rgba(253,203,110,.1);color:var(--orange)}
+  .risk-table .l{background:rgba(0,206,201,.1);color:var(--accent2)}
+  ::-webkit-scrollbar{width:3px}
+  ::-webkit-scrollbar-track{background:transparent}
+  ::-webkit-scrollbar-thumb{background:rgba(108,92,231,.25);border-radius:2px}
+  @media(max-width:768px){
+    .slide{padding:24px 18px}
+    .card-grid{grid-template-columns:1fr 1fr}
+    .two-col{grid-template-columns:1fr}
+    .pricing{grid-template-columns:1fr 1fr}
+    .arch-flow{flex-direction:column;gap:4px}
+    .arch-arrow{transform:rotate(90deg)}
+    .tl{flex-direction:column;gap:12px}
+    .tl::before{display:none}
+    .kpi-grid{grid-template-columns:1fr 1fr}
   }
 </style>
 </head>
 <body>
-
-<!-- Particles -->
-<div id="particles"></div>
 <div class="grid-bg"></div>
+<div class="glow-orb"></div>
+<div class="glow-orb"></div>
+<div class="glow-orb" style="opacity:.1"></div>
 
-<!-- ===== SLIDES ===== -->
 <div class="slides">
 
-<!-- SLIDE 1: COVER -->
+<!-- 1/14 COVER -->
 <div class="slide active" data-slide="0">
   <div class="slide-content center-content">
     <div class="tagline">🚀 AI Native · 零代码 · 秒级交付</div>
-    <h1 class="glow-text">AI快速生成平台</h1>
-    <p class="subtitle">输入一句话需求，AI 自动生成可部署的完整应用</p>
-    <div style="margin-top: 40px; display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;">
+    <h1 class="glow-text" style="font-size:clamp(40px,5vw,72px)">「瞬搭」</h1>
+    <p style="font-size:20px;color:#fff;font-weight:300;margin-top:-4px">AI快速生成平台</p>
+    <p class="subtitle">说出你的需求，剩下交给AI</p>
+    <div style="margin-top:30px;display:flex;gap:10px;flex-wrap:wrap;justify-content:center">
       <span class="badge ai">🤖 AI原生架构</span>
-      <span class="badge green">⚡ 30秒出原型</span>
-      <span class="badge">🎯 零技术门槛</span>
-      <span class="badge">🚀 一键部署</span>
+      <span class="badge gr">⚡ 30秒出原型</span>
+      <span class="badge red">🎯 零技术门槛</span>
+      <span class="badge yl">💰 极致成本</span>
     </div>
-    <div style="margin-top: 50px; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 24px; width: 100%; max-width: 500px; display: flex; justify-content: space-between;">
-      <span style="color: var(--text2); font-size: 13px;">📅 2026年6月</span>
-      <span style="color: var(--text2); font-size: 13px;">👤 娜娜 · 产品经理</span>
+    <div style="margin-top:40px;border-top:1px solid rgba(255,255,255,.05);padding-top:18px;width:100%;max-width:450px;display:flex;justify-content:space-between">
+      <span style="color:var(--text2);font-size:12px">📅 2026.06</span>
+      <span style="color:var(--accent2);font-size:12px">👤 娜娜 · 创始人/产品经理</span>
     </div>
   </div>
 </div>
 
-<!-- SLIDE 2: 问题 -->
+<!-- 2/14 三层受众 -->
 <div class="slide" data-slide="1">
-  <div class="slide-content">
-    <div class="tagline">💡 为什么需要这个平台</div>
-    <h2>传统软件开发，<span class="highlight">太慢了</span></h2>
-    <div class="divider"></div>
-    <p class="body-text" style="max-width: 700px;">
-      一个简单的管理工具，从需求到上线，平均需要 <strong>2周~3个月</strong>，<br>
-      需要 <strong>产品经理 + 前端 + 后端 + 测试</strong> 完整团队。<br>
-      而现实是——<strong style="color:#fff;">大多数人只想快速验证一个想法。</strong>
-    </p>
-    <div class="two-col" style="margin-top: 30px;">
-      <div style="background: rgba(255,71,87,0.06); border: 1px solid rgba(255,71,87,0.15); border-radius: 16px; padding: 24px;">
-        <h4 style="color: #ff6b81; font-size: 16px; margin-bottom: 12px;">❌ 传统流程</h4>
-        <div style="font-size: 13px; color: var(--text2); line-height: 2.2;">
-          需求文档 → 原型设计 → UI设计 → 前端开发 → 后端开发 → 联调测试 → 部署上线<br>
-          <strong style="color: #ff6b81;">2周~3个月 · 需要完整技术团队</strong>
-        </div>
+  <div class="slide-content center-content">
+    <div class="tagline">📖 阅读指南</div>
+    <h2>给 <span class="hl">三种人</span> 看的方案</h2>
+    <div class="divider" style="margin:12px auto 24px"></div>
+    <div class="two-col" style="max-width:800px;gap:16px">
+      <div class="card" style="border-left:3px solid var(--orange)">
+        <span class="audience-badge inv">🏦 投资人</span>
+        <p style="margin-top:12px;font-size:13px">市场多大？凭什么赢？<br>谁在做？钱怎么赚？多久回本？</p>
+        <div style="margin-top:8px;font-size:11px;color:var(--orange)">→ 看第3-7页</div>
       </div>
-      <div style="background: rgba(0,206,201,0.06); border: 1px solid rgba(0,206,201,0.15); border-radius: 16px; padding: 24px;">
-        <h4 style="color: var(--accent2); font-size: 16px; margin-bottom: 12px;">✅ AI 快速生成</h4>
-        <div style="font-size: 13px; color: var(--text2); line-height: 2.2;">
-          一句话说出需求 → AI理解并生成 → 一键部署上线<br>
-          <strong style="color: var(--accent2);">30秒~5分钟 · 零技术门槛</strong>
-        </div>
+      <div class="card" style="border-left:3px solid var(--accent)">
+        <span class="audience-badge exc">🛠️ 执行方</span>
+        <p style="margin-top:12px;font-size:13px">怎么建？多久？<br>有什么坑？怎么衡量成功？</p>
+        <div style="margin-top:8px;font-size:11px;color:var(--accent)">→ 看第8-11页</div>
       </div>
+    </div>
+    <div class="card" style="max-width:400px;border-left:3px solid var(--accent2);margin-top:0">
+      <span class="audience-badge cli">🤝 目标客户</span>
+      <p style="margin-top:12px;font-size:13px">能解决我什么问题？多少钱？怎么用？</p>
+      <div style="margin-top:8px;font-size:11px;color:var(--accent2)">→ 看第12-14页</div>
     </div>
   </div>
 </div>
 
-<!-- SLIDE 3: 产品价值 -->
+<!-- 3/14 WHY NOW -->
 <div class="slide" data-slide="2">
   <div class="slide-content">
-    <div class="tagline">🎯 核心价值主张</div>
-    <h2>从想法到产品，<span class="highlight">只需一句话</span></h2>
+    <div class="tagline" style="background:rgba(253,203,110,.12);border-color:rgba(253,203,110,.25);color:var(--orange)">🏦 投资视角</div>
+    <h2>为什么是 <span class="hl">现在</span>？</h2>
     <div class="divider"></div>
-    <div class="card-grid">
-      <div class="card">
-        <div class="num">01</div>
-        <h4>零门槛</h4>
-        <p>不用学代码、不用拖组件。像跟人说话一样，说出你的需求即可</p>
-      </div>
-      <div class="card">
-        <div class="num">02</div>
-        <h4>秒级交付</h4>
-        <p>30秒生成原型，5分钟拿到可直接使用的工具页面</p>
-      </div>
-      <div class="card">
-        <div class="num">03</div>
-        <h4>AI原生</h4>
-        <p>非传统低代码套壳，核心引擎是AI推理，理解意图、生成代码、动态渲染</p>
-      </div>
-      <div class="card">
-        <div class="num">04</div>
-        <h4>即用即走</h4>
-        <p>生成即部署，获得在线链接即可使用。也可导出源码二次开发</p>
-      </div>
+    <div class="kpi-grid">
+      <div class="kpi"><div class="kv">$290亿</div><div class="kl">全球低代码市场</div></div>
+      <div class="kpi" style="border-color:rgba(0,206,201,.12)"><div class="kv" style="background:linear-gradient(135deg,var(--accent2),var(--accent));-webkit-background-clip:text">20-25%</div><div class="kl">年复合增长率</div></div>
+      <div class="kpi"><div class="kv">5200万+</div><div class="kl">中国中小企业</div></div>
+      <div class="kpi" style="border-color:rgba(253,121,168,.12)"><div class="kv" style="background:linear-gradient(135deg,var(--accent3),var(--orange));-webkit-background-clip:text">80%</div><div class="kl">没有数字化工具</div></div>
     </div>
-    <div class="badge-row" style="margin-top: 24px; justify-content: center;">
-      <span class="badge ai">🎯 产品经理</span>
-      <span class="badge ai">🏢 中小企业主</span>
-      <span class="badge ai">📊 运营/行政</span>
-      <span class="badge ai">👨‍💻 个人开发者</span>
+    <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:18px 22px;margin-top:18px">
+      <div style="font-size:13px;color:var(--text2);line-height:2;font-family:monospace">
+        2023前：低代码门槛高，拖拽式操作仍有学习成本<br>
+        2024&nbsp;&nbsp;：AI代码生成能力突破，但工具面向开发者<br>
+        2025&nbsp;&nbsp;：Bolt.new/Lovable 验证了自然语言→应用的市场<br>
+        2026&nbsp;&nbsp;：<span style="color:var(--accent2);font-weight:700">市场教育完成，产品仍处早期——窗口期还在</span><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↑<span style="color:var(--accent);font-weight:700"> 瞬搭在这里</span>
+      </div>
     </div>
   </div>
 </div>
 
-<!-- SLIDE 4: 产品架构 -->
+<!-- 4/14 WHY US -->
 <div class="slide" data-slide="3">
   <div class="slide-content">
-    <div class="tagline">🏗️ 系统设计</div>
-    <h2>产品架构：<span class="highlight">四层闭环</span></h2>
+    <div class="tagline" style="background:rgba(253,203,110,.12);border-color:rgba(253,203,110,.25);color:var(--orange)">🏦 投资视角</div>
+    <h2>为什么是 <span class="hl">我们</span>？</h2>
     <div class="divider"></div>
-    <div class="arch-flow">
-      <div class="arch-box">
-        <div class="label">🗣️ 用户输入</div>
-        <div class="desc">一句话需求 · 描述 · 截图</div>
+    <div class="two-col">
+      <div class="card" style="border-left:3px solid var(--orange)">
+        <span style="font-size:12px;color:var(--orange);font-weight:600">👤 创始人</span>
+        <p style="margin-top:8px;font-size:13px">我是娜娜，一个不会写代码的产品经理。过去几年一直在做一件事：<span style="color:#fff">用AI把商业想法变成可用的产品。</span></p>
+        <p style="margin-top:6px;font-size:13px">从"给自己做个客户管理工具要排期3周"开始，到形成<span style="color:#fff">Hermes(规划)+Codex(执行)</span>的AI流水线，再到把这条流水线产品化为「瞬搭」。</p>
       </div>
-      <div class="arch-arrow">→</div>
-      <div class="arch-box">
-        <div class="label">🧠 AI推理引擎</div>
-        <div class="desc">需求理解 → 架构规划 → 代码生成</div>
-      </div>
-      <div class="arch-arrow">→</div>
-      <div class="arch-box">
-        <div class="label">📦 内容交付</div>
-        <div class="desc">看板 · 表单 · 工作台 · 报表</div>
-      </div>
-      <div class="arch-arrow">→</div>
-      <div class="arch-box">
-        <div class="label">🚀 部署交付</div>
-        <div class="desc">一键部署 · 在线链接 · 可分享</div>
-      </div>
-    </div>
-    <div class="card-grid" style="margin-top: 24px;">
-      <div class="card" style="padding: 18px;">
-        <h4>🧠 智能需求理解</h4>
-        <p>自然语言解析，自动识别页面类型、功能模块和数据关系</p>
-      </div>
-      <div class="card" style="padding: 18px;">
-        <h4>📋 多类型页面生成</h4>
-        <p>看板/表单/工作台/报表，AI动态生成任意工具界面</p>
-      </div>
-      <div class="card" style="padding: 18px;">
-        <h4>💾 数据管理</h4>
-        <p>自动建表、增删改查、导入导出，开箱即用</p>
-      </div>
-      <div class="card" style="padding: 18px;">
-        <h4>⚡ 一键部署</h4>
-        <p>生成即上线，秒级获取可访问在线链接</p>
+      <div class="card" style="border-left:3px solid var(--accent2)">
+        <span style="font-size:12px;color:var(--accent2);font-weight:600">🤖 AI团队优势</span>
+        <div style="margin-top:8px">
+          <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:13px"><span style="color:var(--text2)">团队规模</span><span style="color:#fff">1人+AI×2 vs 传统5-8人</span></div>
+          <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:13px"><span style="color:var(--text2)">月人力成本</span><span style="color:var(--accent2)">¥1,000 vs ¥15-30万</span></div>
+          <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:13px"><span style="color:var(--text2)">开发速度</span><span style="color:#fff">按分钟 vs 按天</span></div>
+          <div style="display:flex;justify-content:space-between;padding:6px 0;font-size:13px"><span style="color:var(--text2)">可扩展性</span><span style="color:var(--accent2)">加AI≈零边际成本</span></div>
+        </div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- SLIDE 5: 对比优势 -->
+<!-- 5/14 竞争 -->
 <div class="slide" data-slide="4">
   <div class="slide-content">
-    <div class="tagline">⚖️ 差异化定位</div>
-    <h2>与传统低代码的<span class="highlight">本质区别</span></h2>
+    <div class="tagline" style="background:rgba(253,203,110,.12);border-color:rgba(253,203,110,.25);color:var(--orange)">🏦 投资视角</div>
+    <h2>凭什么 <span class="hl">赢</span>？</h2>
     <div class="divider"></div>
-    <table class="compare-table">
-      <thead>
-        <tr>
-          <th style="width:25%;">对比维度</th>
-          <th style="width:37%;">传统低代码平台</th>
-          <th style="width:38%;" class="highlight-cell">AI快速生成平台</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>操作方式</td>
-          <td>拖拽组件、配置表单</td>
-          <td class="highlight-cell">说话就行</td>
-        </tr>
-        <tr>
-          <td>学习成本</td>
-          <td>需学习平台操作和组件逻辑</td>
-          <td class="highlight-cell">零学习成本</td>
-        </tr>
-        <tr>
-          <td>生成速度</td>
-          <td>小时级（拖拽+配置）</td>
-          <td class="highlight-cell">秒级（AI自动生成）</td>
-        </tr>
-        <tr>
-          <td>灵活度</td>
-          <td>固定的组件库，有限组合</td>
-          <td class="highlight-cell">AI动态生成任意界面</td>
-        </tr>
-        <tr>
-          <td>技术门槛</td>
-          <td>需理解业务逻辑和数据结构</td>
-          <td class="highlight-cell">零技术基础可用</td>
-        </tr>
-        <tr>
-          <td>核心引擎</td>
-          <td>可视化配置引擎</td>
-          <td class="highlight-cell">AI大模型推理引擎</td>
-        </tr>
-      </tbody>
+    <table>
+      <tr><th style="width:20%">竞品</th><th style="width:25%">类型</th><th style="width:25%">定价</th><th style="width:30%">瞬搭优势</th></tr>
+      <tr><td>Bolt.new</td><td>AI生成代码</td><td>$20/月</td><td class="hcell">面向业务人，零代码</td></tr>
+      <tr><td>钉钉宜搭</td><td>传统低代码</td><td>¥300+/月</td><td class="hcell">自然语言，不用学</td></tr>
+      <tr><td>明道云</td><td>零代码</td><td>¥50/人/月</td><td class="hcell">秒级，个人免费</td></tr>
+      <tr><td>外包开发</td><td>定制开发</td><td>数万起</td><td class="hcell">30秒原型，¥0起步</td></tr>
+    </table>
+    <div class="card-grid" style="grid-template-columns:repeat(4,1fr);margin-top:16px">
+      <div class="card" style="padding:12px;text-align:center"><div style="font-size:13px;font-weight:600;color:var(--accent)">数据飞轮</div><p style="font-size:11px">用越多→越精准</p></div>
+      <div class="card" style="padding:12px;text-align:center"><div style="font-size:13px;font-weight:600;color:var(--accent2)">切换成本</div><p style="font-size:11px">数据沉淀在平台</p></div>
+      <div class="card" style="padding:12px;text-align:center"><div style="font-size:13px;font-weight:600;color:var(--accent3)">AI原生</div><p style="font-size:11px">迭代快一个数量级</p></div>
+      <div class="card" style="padding:12px;text-align:center"><div style="font-size:13px;font-weight:600;color:var(--orange)">先发优势</div><p style="font-size:11px">国内细分空白</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- 6/14 商业模式 -->
+<div class="slide" data-slide="5">
+  <div class="slide-content">
+    <div class="tagline" style="background:rgba(253,203,110,.12);border-color:rgba(253,203,110,.25);color:var(--orange)">🏦 投资视角</div>
+    <h2>怎么 <span class="hl">赚钱</span>？</h2>
+    <div class="divider"></div>
+    <div class="pricing">
+      <div class="pcard"><div class="pn">免费版</div><div class="pr">¥0</div><div class="pf">10次/月<br>3个部署<br>100条数据</div></div>
+      <div class="pcard feat"><div class="pn">⭐ 专业版</div><div class="pr">¥99<span>/月</span></div><div class="pf">100次/月<br>不限部署<br>10万条数据</div></div>
+      <div class="pcard"><div class="pn">企业版</div><div class="pr">¥499<span>/月</span></div><div class="pf">不限次数<br>团队协作<br>私有化可选</div></div>
+      <div class="pcard" style="border-color:rgba(0,206,201,.2)"><div class="pn">🏢 私有部署</div><div class="pr">¥5万<span>起</span></div><div class="pf">企业独立部署<br>定制开发<br>专属支持</div></div>
+    </div>
+    <div class="card" style="margin-top:14px;padding:14px 18px">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div><span style="color:var(--text2);font-size:12px">📈 收入预测（保守）</span></div>
+        <div><span style="color:var(--accent2);font-size:12px">Q1盈亏平衡 → Q4年化¥120万 → 第2年¥600万</span></div>
+      </div>
+      <div style="margin-top:8px;font-size:12px;color:var(--text2)">关键假设：CAC≈¥0（内容引流）· 付费转化率5% · 月流失5% · 月固定成本¥3,000</div>
+    </div>
+  </div>
+</div>
+
+<!-- 7/14 融资 -->
+<div class="slide" data-slide="6">
+  <div class="slide-content">
+    <div class="tagline" style="background:rgba(253,203,110,.12);border-color:rgba(253,203,110,.25);color:var(--orange)">🏦 投资视角</div>
+    <h2>融资与 <span class="hl">里程碑</span></h2>
+    <div class="divider"></div>
+    <div class="two-col">
+      <div>
+        <h3 style="font-size:16px">资金用途（种子轮 ¥80万）</h3>
+        <div style="margin-top:8px">
+          <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:13px"><span style="color:var(--text2)">产品开发 40%</span><span style="color:var(--accent)">¥32万</span></div>
+          <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:13px"><span style="color:var(--text2)">市场推广 30%</span><span style="color:var(--accent2)">¥24万</span></div>
+          <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:13px"><span style="color:var(--text2)">团队（兼职UI+运营）20%</span><span style="color:var(--accent3)">¥16万</span></div>
+          <div style="display:flex;justify-content:space-between;padding:6px 0;font-size:13px"><span style="color:var(--text2)">运营储备 10%</span><span style="color:var(--orange)">¥8万</span></div>
+        </div>
+      </div>
+      <div>
+        <h3 style="font-size:16px">融资节奏</h3>
+        <div style="margin-top:8px">
+          <div style="background:rgba(108,92,231,.06);border:1px solid rgba(108,92,231,.15);border-radius:8px;padding:10px 14px;margin-bottom:6px">
+            <div style="font-size:12px;color:var(--accent);font-weight:600">种子轮 ¥50-80万 · 当前</div>
+            <div style="font-size:11px;color:var(--text2)">里程碑：MVP验证 + 首个付费客户</div>
+          </div>
+          <div style="background:rgba(0,206,201,.06);border:1px solid rgba(0,206,201,.15);border-radius:8px;padding:10px 14px;margin-bottom:6px">
+            <div style="font-size:12px;color:var(--accent2);font-weight:600">Pre-A ¥300-500万 · 第6个月</div>
+            <div style="font-size:11px;color:var(--text2)">月活5万+，月收入¥5万+</div>
+          </div>
+          <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:8px;padding:10px 14px">
+            <div style="font-size:12px;color:#fff;font-weight:600">A轮 ¥1,000-3,000万 · 第18个月</div>
+            <div style="font-size:11px;color:var(--text2)">年收入¥500万+，团队20人</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 8/14 产品架构 -->
+<div class="slide" data-slide="7">
+  <div class="slide-content">
+    <div class="tagline" style="background:rgba(108,92,231,.12);border-color:rgba(108,92,231,.25)">🛠️ 执行视角</div>
+    <h2>产品架构：<span class="hl">四层闭环</span></h2>
+    <div class="divider"></div>
+    <div class="arch-flow">
+      <div class="arch-box"><div class="lbl">🗣️ 用户输入</div><div class="dsc">一句话 · 描述 · 截图</div></div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-box"><div class="lbl">🧠 AI推理引擎</div><div class="dsc">需求理解→架构→生成</div></div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-box"><div class="lbl">📦 内容交付</div><div class="dsc">看板·表单·工作台·报表</div></div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-box"><div class="lbl">🚀 部署交付</div><div class="dsc">一键部署 · 在线链接</div></div>
+    </div>
+    <div class="card-grid" style="grid-template-columns:repeat(4,1fr)">
+      <div class="card" style="padding:14px"><h4 style="font-size:14px">✅ 已完成</h4><p style="font-size:12px">需求解析引擎<br>6种字段模板<br>页面自动生成<br>线上部署可用</p></div>
+      <div class="card" style="padding:14px"><h4 style="font-size:14px;color:var(--accent3)">🔴 当前缺陷</h4><p style="font-size:12px">假数据<br>无独立URL<br>无用户系统<br>仅看板型</p></div>
+      <div class="card" style="padding:14px"><h4 style="font-size:14px;color:var(--accent2)">技术栈</h4><p style="font-size:12px">Next.js+React<br>Tailwind/shadcn<br>多模型AI调度<br>Vercel部署</p></div>
+      <div class="card" style="padding:14px"><h4 style="font-size:14px;color:var(--orange)">性能目标</h4><p style="font-size:12px">生成&lt;2s<br>并发100+<br>可用性99.5%<br>单次成本&lt;¥0.2</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- 9/14 路线图 -->
+<div class="slide" data-slide="8">
+  <div class="slide-content">
+    <div class="tagline" style="background:rgba(108,92,231,.12);border-color:rgba(108,92,231,.25)">🛠️ 执行视角</div>
+    <h2>6个月 <span class="hl">执行路线</span></h2>
+    <div class="divider"></div>
+    <div class="tl">
+      <div class="tli"><div class="dot"></div><div class="ph">Phase 1</div><div class="dd">MVP完善<br>第1-2周</div><div class="st">WIP</div></div>
+      <div class="tli"><div class="dot"></div><div class="ph">Phase 2</div><div class="dd">体验升级<br>第3-6周</div><div class="st" style="background:rgba(108,92,231,.12);color:var(--accent)">待启动</div></div>
+      <div class="tli"><div class="dot"></div><div class="ph">Phase 3</div><div class="dd">商业化<br>第7-12周</div><div class="st" style="background:rgba(255,255,255,.05);color:var(--text2)">规划中</div></div>
+      <div class="tli"><div class="dot"></div><div class="ph">Phase 4</div><div class="dd">规模化<br>第13-24周</div><div class="st" style="background:rgba(255,255,255,.05);color:var(--text2)">远期</div></div>
+    </div>
+    <div style="background:rgba(108,92,231,.08);border:1px solid rgba(108,92,231,.15);border-radius:10px;padding:14px 18px;margin-top:12px">
+      <div style="font-size:13px;font-weight:600;color:var(--accent);margin-bottom:6px">Phase 1 本周任务</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:12px;color:var(--text2)">
+        <div>🔴 修复假数据 · 1天 · Codex</div>
+        <div>🔴 生成页面独立URL · 2天 · Codex</div>
+        <div>🟡 表单页面生成 · 2天 · Codex</div>
+        <div>🟡 工作台页面生成 · 2天 · Codex</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 10/14 KPI -->
+<div class="slide" data-slide="9">
+  <div class="slide-content">
+    <div class="tagline" style="background:rgba(108,92,231,.12);border-color:rgba(108,92,231,.25)">🛠️ 执行视角</div>
+    <h2>怎么衡量 <span class="hl">成功</span>？</h2>
+    <div class="divider"></div>
+    <div class="kpi-grid">
+      <div class="kpi"><div class="kv">50,000</div><div class="kl">Q4目标MAU</div></div>
+      <div class="kpi" style="border-color:rgba(0,206,201,.12)"><div class="kv">5%→8%</div><div class="kl">付费转化率</div></div>
+      <div class="kpi"><div class="kv">85%</div><div class="kl">月留存目标</div></div>
+      <div class="kpi" style="border-color:rgba(253,121,168,.12)"><div class="kv" style="background:linear-gradient(135deg,var(--accent3),var(--orange));-webkit-background-clip:text">50+</div><div class="kl">NPS净推荐值</div></div>
+    </div>
+    <div style="margin-top:16px;font-size:13px;color:var(--text2)">各阶段成功标志：</div>
+    <table style="font-size:12px">
+      <tr><th style="width:20%">阶段</th><th>成功标志</th></tr>
+      <tr><td style="color:var(--accent);font-weight:600">Phase 1</td><td>可注册、3种页面类型、独立URL访问</td></tr>
+      <tr><td style="color:var(--accent2);font-weight:600">Phase 2</td><td>NPS≥30，月留存≥70%</td></tr>
+      <tr><td style="color:var(--accent3);font-weight:600">Phase 3</td><td>月收入¥5万+，付费用户200+</td></tr>
+      <tr><td style="color:var(--orange);font-weight:600">Phase 4</td><td>月收入¥50万+，年化¥600万+</td></tr>
     </table>
   </div>
 </div>
 
-<!-- SLIDE 6: 应用场景 -->
-<div class="slide" data-slide="5">
-  <div class="slide-content">
-    <div class="tagline">🎬 实际用例</div>
-    <h2>一句话能做什么？</h2>
-    <div class="divider"></div>
-    <div class="card-grid" style="grid-template-columns: repeat(2, 1fr);">
-      <div class="card" style="border-left: 3px solid var(--accent);">
-        <h4>🏢 客户管理系统</h4>
-        <p style="font-size:12px; color:var(--accent); margin-bottom:8px;">输入→</p>
-        <p style="font-size:13px;">"帮我做一个客户管理系统，要有客户列表、添加客户、跟进记录和成交统计"</p>
-        <p style="font-size:12px; color:var(--accent2); margin-top:8px;">→ 30秒生成完整CRM系统</p>
-      </div>
-      <div class="card" style="border-left: 3px solid var(--accent2);">
-        <h4>📊 项目进度看板</h4>
-        <p style="font-size:12px; color:var(--accent2); margin-bottom:8px;">输入→</p>
-        <p style="font-size:13px;">"做一个项目进度看板，能看到每个任务的负责人、截止日期和完成状态"</p>
-        <p style="font-size:12px; color:var(--accent2); margin-top:8px;">→ 自动生成Kanban看板</p>
-      </div>
-      <div class="card" style="border-left: 3px solid var(--accent3);">
-        <h4>📝 在线调查表</h4>
-        <p style="font-size:12px; color:var(--accent3); margin-bottom:8px;">输入→</p>
-        <p style="font-size:13px;">"帮我生成一个员工满意度调查表，包含单选、多选和评分题型"</p>
-        <p style="font-size:12px; color:var(--accent2); margin-top:8px;">→ 生成可在线填写的表单</p>
-      </div>
-      <div class="card" style="border-left: 3px solid #ffa502;">
-        <h4>📦 库存管理工具</h4>
-        <p style="font-size:12px; color:#ffa502; margin-bottom:8px;">输入→</p>
-        <p style="font-size:13px;">"做一个库存管理页面，能扫码入库、查询库存、设置预警"</p>
-        <p style="font-size:12px; color:var(--accent2); margin-top:8px;">→ 生成仓库管理工具</p>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- SLIDE 7: 技术方案 -->
-<div class="slide" data-slide="6">
-  <div class="slide-content">
-    <div class="tagline">🔧 技术实现</div>
-    <h2>轻量而强大的<span class="highlight">技术栈</span></h2>
-    <div class="divider"></div>
-    <div class="two-col">
-      <div>
-        <div class="card-grid" style="grid-template-columns: 1fr;">
-          <div class="card" style="padding: 16px;">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-              <h4>🌐 前端</h4>
-              <span class="badge ai">Next.js + React</span>
-            </div>
-          </div>
-          <div class="card" style="padding: 16px;">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-              <h4>🎨 UI</h4>
-              <span class="badge green">Tailwind CSS + shadcn/ui</span>
-            </div>
-          </div>
-          <div class="card" style="padding: 16px;">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-              <h4>🧠 AI引擎</h4>
-              <span class="badge ai">GPT-5.5 / 大模型API</span>
-            </div>
-          </div>
-          <div class="card" style="padding: 16px;">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-              <h4>🚀 部署</h4>
-              <span class="badge green">Vercel · 一键自动部署</span>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div style="display: flex; flex-direction: column; justify-content: center;">
-        <h3 style="margin-bottom: 12px;">架构亮点</h3>
-        <div style="display: flex; flex-direction: column; gap: 10px;">
-          <div style="background: rgba(255,255,255,0.03); border-radius: 10px; padding: 12px 16px; border-left: 3px solid var(--accent);">
-            <strong style="color:#fff; font-size:14px;">AI Native</strong>
-            <p style="font-size:13px; margin-top:2px;">核心是AI推理，不是传统代码逻辑</p>
-          </div>
-          <div style="background: rgba(255,255,255,0.03); border-radius: 10px; padding: 12px 16px; border-left: 3px solid var(--accent2);">
-            <strong style="color:#fff; font-size:14px;">动态渲染</strong>
-            <p style="font-size:13px; margin-top:2px;">页面根据AI解析结果实时生成，非写死模板</p>
-          </div>
-          <div style="background: rgba(255,255,255,0.03); border-radius: 10px; padding: 12px 16px; border-left: 3px solid var(--accent3);">
-            <strong style="color:#fff; font-size:14px;">渐进式交付</strong>
-            <p style="font-size:13px; margin-top:2px;">从一句话MVP开始，不断迭代完善</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- SLIDE 8: 案例 - 起重机 -->
-<div class="slide" data-slide="7">
-  <div class="slide-content">
-    <div class="tagline">🏆 典型落地案例</div>
-    <h2>起重机生产制造<span class="highlight">报价系统</span></h2>
-    <div class="divider"></div>
-    <p class="body-text" style="max-width: 700px;">
-      平台能力的真实验证——将传统需要工程师<strong>人工查询参数、手工计算报价</strong>（耗时数小时）的流程，<br>
-      缩短到 <strong style="color: var(--accent2);">30分钟内完成从需求理解到报价输出</strong>。
-    </p>
-    <div class="case-box">
-      <div class="case-title">产品架构</div>
-      <div class="case-flow">
-        <span>📦 配件库管理</span>
-        <span class="arrow">→</span>
-        <span>🧠 AI智能推理</span>
-        <span class="arrow">→</span>
-        <span>📄 报价/报告交付</span>
-      </div>
-      <div class="case-desc" style="margin-top: 16px;">
-        <strong style="color:#fff;">核心流程：</strong> 用户输入起重机参数 → AI自动匹配配件库 → 智能计算报价 → 生成特检申报报告
-      </div>
-    </div>
-    <div class="card-grid" style="grid-template-columns: repeat(3, 1fr); margin-top: 20px;">
-      <div class="card" style="text-align:center; padding: 16px;">
-        <div class="num" style="font-size:28px;">⏱️ 数小时 → 30分钟</div>
-        <p>效率提升</p>
-      </div>
-      <div class="card" style="text-align:center; padding: 16px;">
-        <div class="num" style="font-size:28px;">🤖 AI自动匹配</div>
-        <p>配件库智能推理</p>
-      </div>
-      <div class="card" style="text-align:center; padding: 16px;">
-        <div class="num" style="font-size:28px;">📄 一键输出</div>
-        <p>报价+申报报告</p>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- SLIDE 9: 路线图 -->
-<div class="slide" data-slide="8">
-  <div class="slide-content">
-    <div class="tagline">🗺️ 实施计划</div>
-    <h2>四阶段 <span class="highlight">落地路线</span></h2>
-    <div class="divider"></div>
-    <div class="timeline">
-      <div class="tl-item">
-        <div class="tl-dot"></div>
-        <div class="tl-phase">Phase 1</div>
-        <div class="tl-desc">MVP验证<br>一句话→看板生成</div>
-        <div class="tl-status done">✅ 已完成</div>
-      </div>
-      <div class="tl-item">
-        <div class="tl-dot"></div>
-        <div class="tl-phase">Phase 2</div>
-        <div class="tl-desc">能力扩展<br>多页面+数据持久化</div>
-        <div class="tl-status next">⏳ 2周</div>
-      </div>
-      <div class="tl-item">
-        <div class="tl-dot"></div>
-        <div class="tl-phase">Phase 3</div>
-        <div class="tl-desc">体验升级<br>对话式+在线编辑+模板</div>
-        <div class="tl-status future">📅 4周</div>
-      </div>
-      <div class="tl-item">
-        <div class="tl-dot"></div>
-        <div class="tl-phase">Phase 4</div>
-        <div class="tl-desc">商业变现<br>订阅+协作+私有部署</div>
-        <div class="tl-status future">📅 8周</div>
-      </div>
-    </div>
-    <div style="margin-top: 24px; background: rgba(108,92,231,0.06); border: 1px solid rgba(108,92,231,0.15); border-radius: 12px; padding: 16px 20px; display: flex; align-items: center; gap: 12px;">
-      <span style="font-size: 28px;">🌐</span>
-      <div>
-        <div style="font-size: 14px; font-weight: 600; color: #fff;">当前线上版本</div>
-        <div style="font-size: 13px; color: var(--accent);">https://ai-tau-jet-97.vercel.app/</div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- SLIDE 10: 商业化 -->
-<div class="slide" data-slide="9">
-  <div class="slide-content">
-    <div class="tagline">💰 商业模型</div>
-    <h2><span class="highlight">分层定价</span>，覆盖全场景</h2>
-    <div class="divider"></div>
-    <div class="pricing-grid">
-      <div class="pricing-card">
-        <div class="plan-name">免费版</div>
-        <div class="price">¥0 <span>/月</span></div>
-        <div class="features">
-          10次生成<br>
-          3个部署<br>
-          100条数据
-        </div>
-      </div>
-      <div class="pricing-card featured">
-        <div class="plan-name">⭐ 专业版</div>
-        <div class="price">¥99 <span>/月</span></div>
-        <div class="features">
-          100次生成<br>
-          不限部署<br>
-          10万条数据
-        </div>
-      </div>
-      <div class="pricing-card">
-        <div class="plan-name">企业版</div>
-        <div class="price">¥499 <span>/月</span></div>
-        <div class="features">
-          不限生成<br>
-          不限部署<br>
-          不限存储
-        </div>
-      </div>
-      <div class="pricing-card" style="border-color: rgba(0,206,201,0.3);">
-        <div class="plan-name">🏢 私有部署</div>
-        <div class="price">按需 <span>报价</span></div>
-        <div class="features">
-          私有服务器<br>
-          定制开发<br>
-          专属支持
-        </div>
-      </div>
-    </div>
-    <div style="margin-top: 24px; display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
-      <div style="text-align:center;">
-        <div style="font-size: 13px; color: var(--text2);">🎯 目标市场</div>
-        <div style="font-size: 14px; color: #fff; font-weight: 500; margin-top: 4px;">中小企业 · 个人创作者 · 教育培训 · 企业培训</div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- SLIDE 11: 团队 -->
+<!-- 11/14 风险 -->
 <div class="slide" data-slide="10">
   <div class="slide-content">
-    <div class="tagline">👥 团队与协作</div>
-    <h2>人 + AI 的 <span class="highlight">超级流水线</span></h2>
+    <div class="tagline" style="background:rgba(108,92,231,.12);border-color:rgba(108,92,231,.25)">🛠️ 执行视角</div>
+    <h2>风险与 <span class="hl">应对</span></h2>
     <div class="divider"></div>
-    <div class="arch-flow" style="margin-top: 20px;">
-      <div class="arch-box" style="border-color: var(--accent);">
-        <div class="label">👤 娜娜</div>
-        <div class="desc">产品经理 · 需求定义</div>
+    <table class="risk-table" style="font-size:12px">
+      <tr><th style="width:22%">风险</th><th style="width:12%">概率</th><th style="width:12%">影响</th><th>应对策略</th></tr>
+      <tr><td>大厂入局</td><td class="h">高</td><td class="m">中</td><td>聚焦垂直场景做深，不做泛平台</td></tr>
+      <tr><td>AI模型成本上升</td><td class="m">中</td><td class="h">高</td><td>多模型策略+小模型兜底</td></tr>
+      <tr><td>用户留存率低</td><td class="m">中</td><td class="h">高</td><td>强Onboarding+首日引导+模板推荐</td></tr>
+      <tr><td>数据合规风险</td><td class="m">中</td><td class="h">高</td><td>企业版私有部署，数据不出域</td></tr>
+      <tr><td>生成质量不稳定</td><td class="m">中</td><td class="m">中</td><td>固化提示词+人工审核机制</td></tr>
+      <tr><td>AI工具单点故障</td><td class="l">低</td><td class="m">中</td><td>多AI兜底+余额监控告警</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- 12/14 客户场景 -->
+<div class="slide" data-slide="11">
+  <div class="slide-content">
+    <div class="tagline" style="background:rgba(0,206,201,.12);border-color:rgba(0,206,201,.25);color:var(--accent2)">🤝 客户视角</div>
+    <h2>能帮你 <span class="hl">做什么</span>？</h2>
+    <div class="divider"></div>
+    <div class="two-col" style="gap:12px">
+      <div class="card" style="border-left:3px solid var(--accent);padding:14px">
+        <h4 style="font-size:14px">🏢 销售主管</h4>
+        <p style="font-size:12px">"公司让我管客户，Excel乱，CRM贵，找开发排期2周"</p>
+        <div style="margin-top:6px;font-size:12px;color:var(--accent)">输入 → 30秒生成客户管理系统</div>
       </div>
-      <div class="arch-arrow">→</div>
-      <div class="arch-box" style="border-color: var(--accent2);">
-        <div class="label">🧠 Hermes</div>
-        <div class="desc">超级大脑 · 规划管理</div>
-      </div>
-      <div class="arch-arrow">→</div>
-      <div class="arch-box" style="border-color: var(--accent3);">
-        <div class="label">🛠️ Codex</div>
-        <div class="desc">核心执行 · 代码生成</div>
-      </div>
-      <div class="arch-arrow">→</div>
-      <div class="arch-box" style="border-color: #ffa502;">
-        <div class="label">🚀 Vercel</div>
-        <div class="desc">自动化部署上线</div>
+      <div class="card" style="border-left:3px solid var(--accent2);padding:14px">
+        <h4 style="font-size:14px">📊 运营</h4>
+        <p style="font-size:12px">"要做活动报名页，开发说排到下下周"</p>
+        <div style="margin-top:6px;font-size:12px;color:var(--accent2)">输入 → 30秒生成在线表单+后台</div>
       </div>
     </div>
-    <div style="margin-top: 24px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 20px; text-align: center;">
-      <p class="body-text" style="font-size: 15px;">
-        <strong style="color: #fff;">你一句话</strong> → Hermes 分析规划 → Codex 核心执行 → GitHub 托管 → Vercel 部署 → <strong style="color: var(--accent2);">你拿到可分享的链接</strong>
-      </p>
+    <div class="two-col" style="gap:12px;margin-top:0">
+      <div class="card" style="border-left:3px solid var(--accent3);padding:14px">
+        <h4 style="font-size:14px">👤 小老板</h4>
+        <p style="font-size:12px">"想看销售团队这个月业绩"</p>
+        <div style="margin-top:6px;font-size:12px;color:var(--accent3)">输入 → 30秒生成数据看板</div>
+      </div>
+      <div class="card" style="border-left:3px solid var(--orange);padding:14px">
+        <h4 style="font-size:14px">📋 HR</h4>
+        <p style="font-size:12px">"想做员工满意度调查，找IT说要一周"</p>
+        <div style="margin-top:6px;font-size:12px;color:var(--orange)">输入 → 30秒生成调查表+自动收集</div>
+      </div>
     </div>
   </div>
 </div>
 
-<!-- SLIDE 12: 结尾 -->
-<div class="slide" data-slide="11">
+<!-- 13/14 案例 -->
+<div class="slide" data-slide="12">
+  <div class="slide-content">
+    <div class="tagline" style="background:rgba(0,206,201,.12);border-color:rgba(0,206,201,.25);color:var(--accent2)">🤝 客户视角</div>
+    <h2>真实案例：<span class="hl">起重机报价系统</span></h2>
+    <div class="divider"></div>
+    <div class="case-box">
+      <div style="font-size:13px;color:var(--accent3);font-weight:600">🏆 已落地的验证</div>
+      <div style="margin-top:10px;font-size:14px;color:var(--text2);line-height:1.8">
+        <strong style="color:#fff">客户：</strong>一家起重机生产制造企业<br>
+        <strong style="color:#fff">痛点：</strong>每次报价需工程师人工查参数、手工计算，耗时<strong style="color:var(--accent3)">数小时</strong><br>
+        <strong style="color:#fff">方案：</strong>配件库数字化 → AI智能匹配 → 自动生成报价+申报报告<br>
+        <strong style="color:#fff">结果：</strong><strong style="color:var(--accent2);font-size:18px">数小时 → 30分钟</strong>
+      </div>
+      <div class="case-flow">
+        <span>📦 配件库</span><span class="ar">→</span><span>🧠 AI推理</span><span class="ar">→</span><span>📄 报价/报告</span>
+      </div>
+    </div>
+    <div class="card-grid" style="grid-template-columns:repeat(3,1fr);margin-top:14px">
+      <div class="card" style="padding:14px;text-align:center"><div style="font-size:13px;color:var(--accent2);font-weight:700">✓ 真实客户</div><p style="font-size:11px">非Demo，真实业务已跑通</p></div>
+      <div class="card" style="padding:14px;text-align:center"><div style="font-size:13px;color:var(--accent);font-weight:700">✓ 持续使用</div><p style="font-size:11px">不是一次性，真正在生产中用</p></div>
+      <div class="card" style="padding:14px;text-align:center"><div style="font-size:13px;color:var(--orange);font-weight:700">✓ 可复制</div><p style="font-size:11px">同类制造企业可直接复用</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- 14/14 END -->
+<div class="slide" data-slide="13">
   <div class="slide-content center-content">
     <div class="tagline">🌐 立即体验</div>
-    <h1 class="glow-text" style="font-size: clamp(36px, 4vw, 56px);">从想法到产品</h1>
-    <h1 class="glow-text" style="font-size: clamp(36px, 4vw, 56px); margin-top: -8px;">只需 <span style="background: linear-gradient(135deg, var(--accent2), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">一句话</span></h1>
-    <p class="subtitle">AI快速生成平台 · 让每个人都能创造自己的软件工具</p>
-    <div style="margin-top: 40px; display: flex; gap: 16px; flex-wrap: wrap; justify-content: center;">
-      <a href="https://ai-tau-jet-97.vercel.app/" target="_blank" style="display: inline-block; background: linear-gradient(135deg, var(--accent), #8b7cf7); color: #fff; padding: 14px 36px; border-radius: 40px; text-decoration: none; font-size: 16px; font-weight: 600; box-shadow: 0 8px 30px rgba(108,92,231,0.3);">🚀 立即体验</a>
+    <h1 style="font-size:clamp(32px,4vw,52px)">从想法到产品</h1>
+    <h1 style="font-size:clamp(32px,4vw,52px);margin-top:-4px">只需 <span style="background:linear-gradient(135deg,var(--accent2),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">一句话</span></h1>
+    <p class="subtitle">「瞬搭」· 让每个人都能创造自己的软件工具</p>
+    <div style="margin-top:30px;display:flex;gap:14px;flex-wrap:wrap;justify-content:center">
+      <a href="https://ai-tau-jet-97.vercel.app/" target="_blank" style="display:inline-block;background:linear-gradient(135deg,var(--accent),#8b7cf7);color:#fff;padding:12px 32px;border-radius:40px;text-decoration:none;font-size:15px;font-weight:600;box-shadow:0 6px 25px rgba(108,92,231,.3)">🚀 体验平台</a>
+      <a href="https://sabina86589089.github.io/ai-platform-ppt/" target="_blank" style="display:inline-block;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:#fff;padding:12px 32px;border-radius:40px;text-decoration:none;font-size:15px;font-weight:500">📖 查看方案</a>
     </div>
-    <div style="margin-top: 50px; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 20px; width: 100%; max-width: 400px;">
-      <p style="font-size: 13px; color: var(--text2); text-align: center;">
-        🤖 本演示文稿由 Hermes Agent 自动生成<br>
-        <span style="font-size: 11px;">项目方案 · 2026年6月</span>
+    <div style="margin-top:40px;border-top:1px solid rgba(255,255,255,.05);padding-top:18px;width:100%;max-width:400px">
+      <p style="font-size:12px;color:var(--text2);text-align:center">
+        🤖 由 Hermes Agent 根据娜娜的商业思维迭代生成<br>
+        <span style="font-size:10px">V2.1 · 2026年6月 · 娜娜 × Hermes 联合出品</span>
       </p>
     </div>
   </div>
@@ -998,95 +464,25 @@
 
 </div>
 
-<!-- ===== NAVIGATION ===== -->
 <div class="nav">
   <button class="nav-btn" id="prevBtn">◀</button>
   <div class="nav-dots" id="dots"></div>
-  <span class="nav-page" id="pageNum">1 / 12</span>
+  <span class="nav-page" id="pageNum">1 / 14</span>
   <button class="nav-btn" id="nextBtn">▶</button>
 </div>
 
 <script>
-  (function(){
-    const slides = document.querySelectorAll('.slide');
-    const total = slides.length;
-    let current = 0;
-
-    function goTo(idx) {
-      if (idx < 0 || idx >= total) return;
-      slides.forEach(s => s.classList.remove('active'));
-      slides[idx].classList.add('active');
-      current = idx;
-      updateNav();
-
-      // Scroll to top of slide
-      slides[idx].scrollTop = 0;
-    }
-
-    function updateNav() {
-      document.querySelectorAll('.nav-dot').forEach((dot, i) => {
-        dot.classList.toggle('active', i === current);
-      });
-      document.getElementById('pageNum').textContent = `${current + 1} / ${total}`;
-    }
-
-    // Create dots
-    const dotsContainer = document.getElementById('dots');
-    for (let i = 0; i < total; i++) {
-      const dot = document.createElement('div');
-      dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
-      dot.addEventListener('click', () => goTo(i));
-      dotsContainer.appendChild(dot);
-    }
-
-    document.getElementById('prevBtn').addEventListener('click', () => goTo(current - 1));
-    document.getElementById('nextBtn').addEventListener('click', () => goTo(current + 1));
-
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') {
-        e.preventDefault();
-        goTo(current + 1);
-      } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
-        e.preventDefault();
-        goTo(current - 1);
-      } else if (e.key === 'Home') {
-        e.preventDefault();
-        goTo(0);
-      } else if (e.key === 'End') {
-        e.preventDefault();
-        goTo(total - 1);
-      }
-    });
-
-    // Touch support
-    let touchStartX = 0;
-    document.addEventListener('touchstart', (e) => {
-      touchStartX = e.changedTouches[0].screenX;
-    });
-    document.addEventListener('touchend', (e) => {
-      const diff = touchStartX - e.changedTouches[0].screenX;
-      if (Math.abs(diff) > 50) {
-        if (diff > 0) goTo(current + 1);
-        else goTo(current - 1);
-      }
-    });
-
-    // Particle generation
-    const particles = document.getElementById('particles');
-    for (let i = 0; i < 30; i++) {
-      const p = document.createElement('div');
-      p.className = 'particle';
-      const size = Math.random() * 80 + 20;
-      p.style.width = size + 'px';
-      p.style.height = size + 'px';
-      p.style.left = Math.random() * 100 + '%';
-      p.style.top = Math.random() * 100 + '%';
-      p.style.animationDelay = Math.random() * 20 + 's';
-      p.style.animationDuration = (Math.random() * 20 + 15) + 's';
-      particles.appendChild(p);
-    }
-  })();
+(function(){
+  const s=document.querySelectorAll('.slide'),t=s.length;let c=0;
+  function g(i){if(i<0||i>=t)return;s.forEach(x=>x.classList.remove('active'));s[i].classList.add('active');c=i;u();s[i].scrollTop=0}
+  function u(){document.querySelectorAll('.nav-dot').forEach((d,i)=>d.classList.toggle('active',i===c));document.getElementById('pageNum').textContent=c+1+' / '+t}
+  const dc=document.getElementById('dots');
+  for(let i=0;i<t;i++){const d=document.createElement('div');d.className='nav-dot'+(i===0?' active':'');d.addEventListener('click',()=>g(i));dc.appendChild(d)}
+  document.getElementById('prevBtn').addEventListener('click',()=>g(c-1));
+  document.getElementById('nextBtn').addEventListener('click',()=>g(c+1));
+  document.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key==='ArrowDown'||e.key===' '){e.preventDefault();g(c+1)}else if(e.key==='ArrowLeft'||e.key==='ArrowUp'){e.preventDefault();g(c-1)}else if(e.key==='Home'){e.preventDefault();g(0)}else if(e.key==='End'){e.preventDefault();g(t-1)}});
+  let tx=0;document.addEventListener('touchstart',e=>{tx=e.changedTouches[0].screenX});document.addEventListener('touchend',e=>{const d=tx-e.changedTouches[0].screenX;if(Math.abs(d)>50){d>0?g(c+1):g(c-1)}});
+})();
 </script>
-
 </body>
 </html>
