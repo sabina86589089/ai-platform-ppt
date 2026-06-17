@@ -1,527 +1,528 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>瞬搭 · AI快速生成平台 — 商业计划书</title>
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap');
-  *{margin:0;padding:0;box-sizing:border-box}
-  :root{--bg:#060613;--surface:#0c0c24;--surface2:#16163a;--accent:#6c5ce7;--accent2:#00cec9;--accent3:#fd79a8;--orange:#fdcb6e;--text:#e8e8f0;--text2:#8888aa;--glow:rgba(108,92,231,0.25)}
-  body{font-family:'Noto Sans SC',-apple-system,sans-serif;background:var(--bg);color:var(--text);overflow:hidden;height:100vh;width:100vw}
-  .slides{height:100vh;width:100vw;position:relative}
-  .slide{position:absolute;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:50px 70px;opacity:0;transform:scale(.95);transition:opacity .5s ease,transform .5s ease;pointer-events:none;overflow-y:auto}
-  .slide.active{opacity:1;transform:scale(1);pointer-events:auto;z-index:10}
-  .grid-bg{position:fixed;top:0;left:0;width:100%;height:100%;background-image:linear-gradient(rgba(108,92,231,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(108,92,231,.03) 1px,transparent 1px);background-size:50px 50px;pointer-events:none;z-index:0}
-  .glow-orb{position:fixed;border-radius:50%;pointer-events:none;z-index:0;filter:blur(80px);opacity:.2}
-  .glow-orb:nth-child(1){width:400px;height:400px;background:var(--accent);top:-100px;right:-100px}
-  .glow-orb:nth-child(2){width:300px;height:300px;background:var(--accent2);bottom:-50px;left:-50px}
-  .glow-orb:nth-child(3){width:250px;height:250px;background:var(--accent3);top:50%;left:50%;transform:translate(-50%,-50%)}
-  .nav{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:12px;z-index:100;background:rgba(12,12,36,.85);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.08);border-radius:40px;padding:8px 20px}
-  .nav-btn{background:none;border:1px solid rgba(255,255,255,.12);color:var(--text2);width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;transition:all .3s}
-  .nav-btn:hover{border-color:var(--accent);color:var(--text)}
-  .nav-dots{display:flex;gap:5px;margin:0 6px}
-  .nav-dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.12);cursor:pointer;transition:all .3s}
-  .nav-dot.active{background:var(--accent);box-shadow:0 0 10px var(--glow);width:20px;border-radius:3px}
-  .nav-page{color:var(--text2);font-size:12px;font-weight:500;min-width:40px;text-align:center}
-  .slide-content{max-width:1100px;width:100%;position:relative;z-index:1}
-  .center-content{display:flex;flex-direction:column;align-items:center;text-align:center}
-  h1{font-size:clamp(36px,4.5vw,64px);font-weight:900;background:linear-gradient(135deg,#fff 0%,#6c5ce7 40%,#00cec9 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1.2}
-  h2{font-size:clamp(24px,3vw,40px);font-weight:700;color:#fff;margin-bottom:12px;line-height:1.3}
-  h2 .hl{background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-  h3{font-size:18px;font-weight:600;color:#fff;margin-bottom:6px}
-  p,.body-text{font-size:15px;line-height:1.7;color:var(--text2);font-weight:300}
-  .tagline{display:inline-block;background:rgba(108,92,231,.12);border:1px solid rgba(108,92,231,.25);color:var(--accent);padding:5px 16px;border-radius:20px;font-size:12px;font-weight:500;margin-bottom:12px}
-  .subtitle{font-size:16px;color:var(--text2);font-weight:300;margin-top:8px}
-  .divider{width:50px;height:3px;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:2px;margin:12px 0 20px}
-  .card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px;margin-top:20px}
-  .card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:20px;transition:all .3s}
-  .card:hover{border-color:rgba(108,92,231,.3);transform:translateY(-3px);box-shadow:0 10px 30px rgba(108,92,231,.08)}
-  .card .icon{font-size:28px;margin-bottom:8px;display:block}
-  .card h4{font-size:15px;font-weight:600;color:#fff;margin-bottom:4px}
-  .card p{font-size:13px;color:var(--text2);line-height:1.6}
-  .card .big{font-size:32px;font-weight:900;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:2px}
-  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:16px}
-  .arch-flow{display:flex;align-items:center;justify-content:center;gap:10px;margin:24px 0;flex-wrap:wrap}
-  .arch-box{background:rgba(255,255,255,.03);border:1px solid rgba(108,92,231,.2);border-radius:12px;padding:14px 18px;text-align:center;flex:1;min-width:120px}
-  .arch-box .lbl{font-size:13px;font-weight:600;color:#fff}
-  .arch-box .dsc{font-size:11px;color:var(--text2);margin-top:2px}
-  .arch-arrow{color:var(--accent);font-size:18px;opacity:.5}
-  .badge{display:inline-block;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:6px;padding:4px 12px;font-size:12px;color:var(--text2);margin:2px}
-  .badge.ai{border-color:rgba(108,92,231,.3);color:var(--accent)}
-  .badge.gr{border-color:rgba(0,206,201,.3);color:var(--accent2)}
-  .badge.red{border-color:rgba(253,121,168,.3);color:var(--accent3)}
-  .badge.yl{border-color:rgba(253,203,110,.3);color:var(--orange)}
-  .pricing{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:16px}
-  .pcard{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:16px;text-align:center}
-  .pcard.feat{border-color:var(--accent);background:rgba(108,92,231,.06);transform:scale(1.04)}
-  .pcard .pn{font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.5px}
-  .pcard .pr{font-size:24px;font-weight:900;color:#fff;margin:6px 0}
-  .pcard .pr span{font-size:13px;font-weight:400;color:var(--text2)}
-  .pcard .pf{font-size:12px;color:var(--text2);line-height:2}
-  .tl{display:flex;gap:0;margin:24px 0;position:relative}
-  .tl::before{content:'';position:absolute;top:24px;left:30px;right:30px;height:2px;background:linear-gradient(90deg,var(--accent),var(--accent2),var(--accent3),var(--orange));opacity:.25}
-  .tli{flex:1;text-align:center;position:relative;padding:0 8px}
-  .tli .dot{width:14px;height:14px;border-radius:50%;margin:0 auto 10px;position:relative;z-index:2}
-  .tli:nth-child(1) .dot{background:var(--accent);box-shadow:0 0 16px var(--glow)}
-  .tli:nth-child(2) .dot{background:var(--accent2)}
-  .tli:nth-child(3) .dot{background:var(--accent3)}
-  .tli:nth-child(4) .dot{background:var(--orange)}
-  .tli .ph{font-size:13px;font-weight:700;color:#fff;margin-bottom:2px}
-  .tli .dd{font-size:11px;color:var(--text2);line-height:1.5}
-  .tli .st{font-size:10px;display:inline-block;padding:2px 8px;border-radius:8px;margin-top:4px}
-  .tli:nth-child(1) .st{background:rgba(0,206,201,.12);color:var(--accent2)}
-  .tli:nth-child(2) .st{background:rgba(108,92,231,.12);color:var(--accent)}
-  .tli:nth-child(3) .st,.tli:nth-child(4) .st{background:rgba(255,255,255,.05);color:var(--text2)}
-  table{width:100%;border-collapse:separate;border-spacing:0;margin-top:14px;border-radius:10px;overflow:hidden;font-size:13px}
-  th{background:rgba(108,92,231,.12);color:var(--text);font-weight:600;padding:10px 14px;text-align:left;border-bottom:1px solid rgba(255,255,255,.04)}
-  td{padding:9px 14px;color:var(--text2);border-bottom:1px solid rgba(255,255,255,.03)}
-  tr:hover td{background:rgba(255,255,255,.02)}
-  .hcell{color:var(--accent2);font-weight:500}
-  .kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px}
-  .kpi{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px;text-align:center}
-  .kpi .kv{font-size:22px;font-weight:900;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-  .kpi .kl{font-size:11px;color:var(--text2);margin-top:2px}
-  .case-box{background:linear-gradient(135deg,rgba(108,92,231,.06),rgba(0,206,201,.06));border:1px solid rgba(108,92,231,.15);border-radius:16px;padding:24px;margin-top:16px}
-  .case-flow{display:flex;align-items:center;gap:6px;margin-top:12px;flex-wrap:wrap}
-  .case-flow span{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:6px;padding:6px 12px;font-size:12px;color:var(--text)}
-  .case-flow .ar{border:none;background:none;color:var(--accent);font-size:16px;padding:0}
-  .audience-badge{padding:6px 16px;border-radius:20px;font-size:12px;font-weight:600;display:inline-block}
-  .audience-badge.inv{background:rgba(253,203,110,.12);color:var(--orange);border:1px solid rgba(253,203,110,.2)}
-  .audience-badge.exc{background:rgba(108,92,231,.12);color:var(--accent);border:1px solid rgba(108,92,231,.2)}
-  .audience-badge.cli{background:rgba(0,206,201,.12);color:var(--accent2);border:1px solid rgba(0,206,201,.2)}
-  .risk-table td:first-child{font-weight:500;color:#fff}
-  .risk-table .h{background:rgba(253,121,168,.15);color:var(--accent3)}
-  .risk-table .m{background:rgba(253,203,110,.1);color:var(--orange)}
-  .risk-table .l{background:rgba(0,206,201,.1);color:var(--accent2)}
-  ::-webkit-scrollbar{width:3px}
-  ::-webkit-scrollbar-track{background:transparent}
-  ::-webkit-scrollbar-thumb{background:rgba(108,92,231,.25);border-radius:2px}
-  @media(max-width:768px){
-    .slide{padding:24px 18px}
-    .card-grid{grid-template-columns:1fr 1fr}
-    .two-col{grid-template-columns:1fr}
-    .pricing{grid-template-columns:1fr 1fr}
-    .arch-flow{flex-direction:column;gap:4px}
-    .arch-arrow{transform:rotate(90deg)}
-    .tl{flex-direction:column;gap:12px}
-    .tl::before{display:none}
-    .kpi-grid{grid-template-columns:1fr 1fr}
-  }
-</style>
-</head>
-<body>
-<div class="grid-bg"></div>
-<div class="glow-orb"></div>
-<div class="glow-orb"></div>
-<div class="glow-orb" style="opacity:.1"></div>
-
-<div class="slides">
-
-<!-- 1/14 COVER -->
-<div class="slide active" data-slide="0">
-  <div class="slide-content center-content">
-    <div class="tagline">🚀 AI软件生产线 · 首个深耕制造业</div>
-    <h1 class="glow-text" style="font-size:clamp(40px,5vw,72px)">「瞬搭」</h1>
-    <p style="font-size:18px;color:var(--accent2);font-weight:400;margin-top:-4px">AI软件生产线</p>
-    <p class="subtitle">客户的需求进去，可用的系统出来</p>
-    <div style="margin-top:24px;display:flex;gap:10px;flex-wrap:wrap;justify-content:center">
-      <span class="badge ai">🏭 深耕制造业</span>
-      <span class="badge gr">⚡ 需求→系统一站式</span>
-      <span class="badge red">🎯 零IT门槛</span>
-      <span class="badge yl">📈 可扩展零售/贸易/服务</span>
-    </div>
-    <div style="margin-top:40px;border-top:1px solid rgba(255,255,255,.05);padding-top:18px;width:100%;max-width:450px;display:flex;justify-content:space-between">
-      <span style="color:var(--text2);font-size:12px">📅 2026.06</span>
-      <span style="color:var(--accent2);font-size:12px">👤 娜娜 · 创始人/产品经理</span>
-    </div>
-  </div>
-</div>
-
-<!-- 2/14 三层受众 -->
-<div class="slide" data-slide="1">
-  <div class="slide-content center-content">
-    <div class="tagline">📖 阅读指南</div>
-    <h2>给 <span class="hl">三种人</span> 看的方案</h2>
-    <div class="divider" style="margin:12px auto 24px"></div>
-    <div class="two-col" style="max-width:800px;gap:16px">
-      <div class="card" style="border-left:3px solid var(--orange)">
-        <span class="audience-badge inv">🏦 投资人</span>
-        <p style="margin-top:12px;font-size:13px">市场多大？凭什么赢？<br>谁在做？钱怎么赚？多久回本？</p>
-        <div style="margin-top:8px;font-size:11px;color:var(--orange)">→ 看第4-8页</div>
-      </div>
-      <div class="card" style="border-left:3px solid var(--accent)">
-        <span class="audience-badge exc">🛠️ 执行方</span>
-        <p style="margin-top:12px;font-size:13px">怎么建？多久？<br>有什么坑？怎么衡量成功？</p>
-        <div style="margin-top:8px;font-size:11px;color:var(--accent)">→ 看第9-12页</div>
-      </div>
-    </div>
-    <div class="card" style="max-width:400px;border-left:3px solid var(--accent2);margin-top:0">
-      <span class="audience-badge cli">🤝 目标客户</span>
-      <p style="margin-top:12px;font-size:13px">能解决我什么问题？多少钱？怎么用？</p>
-      <div style="margin-top:8px;font-size:11px;color:var(--accent2)">→ 看第13-15页</div>
-    </div>
-  </div>
-</div>
-
-<!-- 3/15 产品到底是什么 -->
-<div class="slide" data-slide="2">
-  <div class="slide-content">
-    <div class="tagline">🧭 先把这事说清楚</div>
-    <h2>这产品到底是 <span class="hl">个啥</span>？</h2>
-    <div class="divider"></div>
-    <div class="center-content">
-      <div style="background:rgba(108,92,231,.06);border:1px solid rgba(108,92,231,.15);border-radius:14px;padding:20px 28px;max-width:700px">
-        <p style="font-size:18px;color:#fff;font-weight:600">一条AI软件生产线</p>
-        <p style="font-size:14px;color:var(--text2);margin-top:6px">客户的需求进去，可用的系统出来</p>
-        <p style="font-size:12px;color:var(--text2);margin-top:2px">不是"生成一个页面"，是需求→分析→组装→验证→交付的完整流水线</p>
-      </div>
-    </div>
-    <div class="two-col" style="gap:12px;margin-top:14px">
-      <div style="background:rgba(108,92,231,.06);border:1px solid rgba(108,92,231,.15);border-radius:10px;padding:14px">
-        <div style="font-size:12px;color:var(--accent);font-weight:600;margin-bottom:6px">V1-V3 我怎么说</div>
-        <p style="font-size:12px;color:var(--text2)">"一个在线工具生成器，说句话生成工具"</p>
-        <p style="font-size:11px;color:var(--accent3);margin-top:4px">❌ 太轻了，看不出深度</p>
-      </div>
-      <div style="background:rgba(0,206,201,.06);border:1px solid rgba(0,206,201,.15);border-radius:10px;padding:14px">
-        <div style="font-size:12px;color:var(--accent2);font-weight:600;margin-bottom:6px">✅ V4 正确理解</div>
-        <p style="font-size:12px;color:var(--text2)">"AI软件生产线——聚焦制造业，从需求到系统结构化交付"</p>
-      </div>
-    </div>
-    <div style="display:flex;gap:10px;margin-top:14px;justify-content:center;flex-wrap:wrap">
-      <div class="card" style="padding:12px;max-width:220px;text-align:center;border-left:3px solid var(--accent)">
-        <div style="font-size:11px;color:var(--accent);font-weight:600">👤 客户（付钱）</div>
-        <p style="font-size:11px;margin-top:4px">制造业中小企业老板<br>生产/销售总监</p>
-      </div>
-      <div class="card" style="padding:12px;max-width:220px;text-align:center;border-left:3px solid var(--accent2)">
-        <div style="font-size:11px;color:var(--accent2);font-weight:600">👤 用户（用）</div>
-        <p style="font-size:11px;margin-top:4px">销售/跟单员/仓管/质检员<br>手机或PC操作</p>
-      </div>
-    </div>
-    <div style="margin-top:10px;background:rgba(108,92,231,.06);border-radius:8px;padding:8px 16px;text-align:center">
-      <span style="font-size:11px;color:var(--text2)">和秒哒/Codex/Claude Code的区别？</span><span style="font-size:11px;color:var(--accent2)"> 它们给"会折腾的人"用，瞬搭给"只要结果"的企业用，且聚焦制造业</span>
-    </div>
-  </div>
-</div>
-
-<!-- 4/15 WHY NOW -->
-<div class="slide" data-slide="2">
-  <div class="slide-content">
-    <div class="tagline" style="background:rgba(253,203,110,.12);border-color:rgba(253,203,110,.25);color:var(--orange)">🏦 投资视角</div>
-    <h2>为什么是 <span class="hl">现在</span>？</h2>
-    <div class="divider"></div>
-    <div class="kpi-grid">
-      <div class="kpi"><div class="kv">$290亿</div><div class="kl">全球低代码市场</div></div>
-      <div class="kpi" style="border-color:rgba(0,206,201,.12)"><div class="kv" style="background:linear-gradient(135deg,var(--accent2),var(--accent));-webkit-background-clip:text">20-25%</div><div class="kl">年复合增长率</div></div>
-      <div class="kpi"><div class="kv">5200万+</div><div class="kl">中国中小企业</div></div>
-      <div class="kpi" style="border-color:rgba(253,121,168,.12)"><div class="kv" style="background:linear-gradient(135deg,var(--accent3),var(--orange));-webkit-background-clip:text">80%</div><div class="kl">没有数字化工具</div></div>
-    </div>
-    <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:18px 22px;margin-top:18px">
-      <div style="font-size:13px;color:var(--text2);line-height:2;font-family:monospace">
-        2023前：低代码门槛高，拖拽式操作仍有学习成本<br>
-        2024&nbsp;&nbsp;：AI代码生成能力突破，但工具面向开发者<br>
-        2025&nbsp;&nbsp;：Bolt.new/Lovable 验证了自然语言→应用的市场<br>
-        2026&nbsp;&nbsp;：<span style="color:var(--accent2);font-weight:700">市场教育完成，产品仍处早期——窗口期还在</span><br>
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↑<span style="color:var(--accent);font-weight:700"> 瞬搭在这里</span>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- 4/14 WHY US -->
-<div class="slide" data-slide="3">
-  <div class="slide-content">
-    <div class="tagline" style="background:rgba(253,203,110,.12);border-color:rgba(253,203,110,.25);color:var(--orange)">🏦 投资视角</div>
-    <h2>为什么是 <span class="hl">我们</span>？</h2>
-    <div class="divider"></div>
-    <div class="two-col">
-      <div class="card" style="border-left:3px solid var(--orange)">
-        <span style="font-size:12px;color:var(--orange);font-weight:600">👤 创始人</span>
-        <p style="margin-top:8px;font-size:13px">我是娜娜，一个不会写代码的产品经理。过去几年一直在做一件事：<span style="color:#fff">用AI把商业想法变成可用的产品。</span></p>
-        <p style="margin-top:6px;font-size:13px">从"给自己做个客户管理工具要排期3周"开始，到形成<span style="color:#fff">Hermes(规划)+Codex(执行)</span>的AI流水线，再到把这条流水线产品化为「瞬搭」。</p>
-      </div>
-      <div class="card" style="border-left:3px solid var(--accent2)">
-        <span style="font-size:12px;color:var(--accent2);font-weight:600">🤖 AI团队优势</span>
-        <div style="margin-top:8px">
-          <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:13px"><span style="color:var(--text2)">团队规模</span><span style="color:#fff">1人+AI×2 vs 传统5-8人</span></div>
-          <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:13px"><span style="color:var(--text2)">月人力成本</span><span style="color:var(--accent2)">¥1,000 vs ¥15-30万</span></div>
-          <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:13px"><span style="color:var(--text2)">开发速度</span><span style="color:#fff">按分钟 vs 按天</span></div>
-          <div style="display:flex;justify-content:space-between;padding:6px 0;font-size:13px"><span style="color:var(--text2)">可扩展性</span><span style="color:var(--accent2)">加AI≈零边际成本</span></div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- 5/14 竞争 -->
-<div class="slide" data-slide="4">
-  <div class="slide-content">
-    <div class="tagline" style="background:rgba(253,203,110,.12);border-color:rgba(253,203,110,.25);color:var(--orange)">🏦 投资视角</div>
-    <h2>凭什么 <span class="hl">赢</span>？</h2>
-    <div class="divider"></div>
-    <table>
-      <tr><th style="width:20%">竞品</th><th style="width:25%">用户是谁</th><th style="width:25%">怎么用</th><th style="width:30%">瞬搭差异</th></tr>
-      <tr><td>秒哒</td><td>想搭应用的人</td><td>选模板→配组件</td><td class="hcell">纯说话，不用学平台</td></tr>
-      <tr><td>Codex</td><td>会跟AI协作的人</td><td>AI写代码→自部署</td><td class="hcell">全自动部署+数据+分享</td></tr>
-      <tr><td>Claude Code</td><td>会用终端的开发者</td><td>终端AI→自部署</td><td class="hcell">零门槛，打开浏览器就行</td></tr>
-      <tr><td>传统外包</td><td>有预算的企业</td><td>需求文档→开发</td><td class="hcell">30秒原型，¥0起步</td></tr>
-    </table>
-    <div class="card-grid" style="grid-template-columns:repeat(4,1fr);margin-top:16px">
-      <div class="card" style="padding:12px;text-align:center"><div style="font-size:13px;font-weight:600;color:var(--accent)">数据飞轮</div><p style="font-size:11px">用越多→越精准</p></div>
-      <div class="card" style="padding:12px;text-align:center"><div style="font-size:13px;font-weight:600;color:var(--accent2)">切换成本</div><p style="font-size:11px">数据沉淀在平台</p></div>
-      <div class="card" style="padding:12px;text-align:center"><div style="font-size:13px;font-weight:600;color:var(--accent3)">AI原生</div><p style="font-size:11px">迭代快一个数量级</p></div>
-      <div class="card" style="padding:12px;text-align:center"><div style="font-size:13px;font-weight:600;color:var(--orange)">先发优势</div><p style="font-size:11px">国内细分空白</p></div>
-    </div>
-  </div>
-</div>
-
-<!-- 6/14 商业模式 -->
-<div class="slide" data-slide="5">
-  <div class="slide-content">
-    <div class="tagline" style="background:rgba(253,203,110,.12);border-color:rgba(253,203,110,.25);color:var(--orange)">🏦 投资视角</div>
-    <h2>怎么 <span class="hl">赚钱</span>？</h2>
-    <div class="divider"></div>
-    <div class="pricing">
-      <div class="pcard"><div class="pn">免费版</div><div class="pr">¥0</div><div class="pf">10次/月<br>3个部署<br>100条数据</div></div>
-      <div class="pcard feat"><div class="pn">⭐ 专业版</div><div class="pr">¥99<span>/月</span></div><div class="pf">100次/月<br>不限部署<br>10万条数据</div></div>
-      <div class="pcard"><div class="pn">企业版</div><div class="pr">¥499<span>/月</span></div><div class="pf">不限次数<br>团队协作<br>私有化可选</div></div>
-      <div class="pcard" style="border-color:rgba(0,206,201,.2)"><div class="pn">🏢 私有部署</div><div class="pr">¥5万<span>起</span></div><div class="pf">企业独立部署<br>定制开发<br>专属支持</div></div>
-    </div>
-    <div class="card" style="margin-top:14px;padding:14px 18px">
-      <div style="display:flex;justify-content:space-between;align-items:center">
-        <div><span style="color:var(--text2);font-size:12px">📈 收入预测（保守）</span></div>
-        <div><span style="color:var(--accent2);font-size:12px">Q1盈亏平衡 → Q4年化¥120万 → 第2年¥600万</span></div>
-      </div>
-      <div style="margin-top:8px;font-size:12px;color:var(--text2)">关键假设：CAC≈¥0（内容引流）· 付费转化率5% · 月流失5% · 月固定成本¥3,000</div>
-    </div>
-  </div>
-</div>
-
-<!-- 7/14 融资 -->
-<div class="slide" data-slide="6">
-  <div class="slide-content">
-    <div class="tagline" style="background:rgba(253,203,110,.12);border-color:rgba(253,203,110,.25);color:var(--orange)">🏦 投资视角</div>
-    <h2>融资与 <span class="hl">里程碑</span></h2>
-    <div class="divider"></div>
-    <div class="two-col">
-      <div>
-        <h3 style="font-size:16px">资金用途（种子轮 ¥80万）</h3>
-        <div style="margin-top:8px">
-          <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:13px"><span style="color:var(--text2)">产品开发 40%</span><span style="color:var(--accent)">¥32万</span></div>
-          <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:13px"><span style="color:var(--text2)">市场推广 30%</span><span style="color:var(--accent2)">¥24万</span></div>
-          <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:13px"><span style="color:var(--text2)">团队（兼职UI+运营）20%</span><span style="color:var(--accent3)">¥16万</span></div>
-          <div style="display:flex;justify-content:space-between;padding:6px 0;font-size:13px"><span style="color:var(--text2)">运营储备 10%</span><span style="color:var(--orange)">¥8万</span></div>
-        </div>
-      </div>
-      <div>
-        <h3 style="font-size:16px">融资节奏</h3>
-        <div style="margin-top:8px">
-          <div style="background:rgba(108,92,231,.06);border:1px solid rgba(108,92,231,.15);border-radius:8px;padding:10px 14px;margin-bottom:6px">
-            <div style="font-size:12px;color:var(--accent);font-weight:600">种子轮 ¥50-80万 · 当前</div>
-            <div style="font-size:11px;color:var(--text2)">里程碑：MVP验证 + 首个付费客户</div>
-          </div>
-          <div style="background:rgba(0,206,201,.06);border:1px solid rgba(0,206,201,.15);border-radius:8px;padding:10px 14px;margin-bottom:6px">
-            <div style="font-size:12px;color:var(--accent2);font-weight:600">Pre-A ¥300-500万 · 第6个月</div>
-            <div style="font-size:11px;color:var(--text2)">月活5万+，月收入¥5万+</div>
-          </div>
-          <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:8px;padding:10px 14px">
-            <div style="font-size:12px;color:#fff;font-weight:600">A轮 ¥1,000-3,000万 · 第18个月</div>
-            <div style="font-size:11px;color:var(--text2)">年收入¥500万+，团队20人</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- 8/14 产品架构 -->
-<div class="slide" data-slide="7">
-  <div class="slide-content">
-    <div class="tagline" style="background:rgba(108,92,231,.12);border-color:rgba(108,92,231,.25)">🛠️ 执行视角</div>
-    <h2>产品架构：<span class="hl">四层闭环</span></h2>
-    <div class="divider"></div>
-    <div class="arch-flow">
-      <div class="arch-box"><div class="lbl">🗣️ 用户输入</div><div class="dsc">一句话 · 描述 · 截图</div></div>
-      <div class="arch-arrow">→</div>
-      <div class="arch-box"><div class="lbl">🧠 AI推理引擎</div><div class="dsc">需求理解→架构→生成</div></div>
-      <div class="arch-arrow">→</div>
-      <div class="arch-box"><div class="lbl">📦 内容交付</div><div class="dsc">看板·表单·工作台·报表</div></div>
-      <div class="arch-arrow">→</div>
-      <div class="arch-box"><div class="lbl">🚀 部署交付</div><div class="dsc">一键部署 · 在线链接</div></div>
-    </div>
-    <div class="card-grid" style="grid-template-columns:repeat(4,1fr)">
-      <div class="card" style="padding:14px"><h4 style="font-size:14px">✅ 已完成</h4><p style="font-size:12px">需求解析引擎<br>6种字段模板<br>页面自动生成<br>线上部署可用</p></div>
-      <div class="card" style="padding:14px"><h4 style="font-size:14px;color:var(--accent3)">🔴 当前缺陷</h4><p style="font-size:12px">假数据<br>无独立URL<br>无用户系统<br>仅看板型</p></div>
-      <div class="card" style="padding:14px"><h4 style="font-size:14px;color:var(--accent2)">技术栈</h4><p style="font-size:12px">Next.js+React<br>Tailwind/shadcn<br>多模型AI调度<br>Vercel部署</p></div>
-      <div class="card" style="padding:14px"><h4 style="font-size:14px;color:var(--orange)">性能目标</h4><p style="font-size:12px">生成&lt;2s<br>并发100+<br>可用性99.5%<br>单次成本&lt;¥0.2</p></div>
-    </div>
-  </div>
-</div>
-
-<!-- 9/14 路线图 -->
-<div class="slide" data-slide="8">
-  <div class="slide-content">
-    <div class="tagline" style="background:rgba(108,92,231,.12);border-color:rgba(108,92,231,.25)">🛠️ 执行视角</div>
-    <h2>6个月 <span class="hl">执行路线</span></h2>
-    <div class="divider"></div>
-    <div class="tl">
-      <div class="tli"><div class="dot"></div><div class="ph">Phase 1</div><div class="dd">MVP完善<br>第1-2周</div><div class="st">WIP</div></div>
-      <div class="tli"><div class="dot"></div><div class="ph">Phase 2</div><div class="dd">体验升级<br>第3-6周</div><div class="st" style="background:rgba(108,92,231,.12);color:var(--accent)">待启动</div></div>
-      <div class="tli"><div class="dot"></div><div class="ph">Phase 3</div><div class="dd">商业化<br>第7-12周</div><div class="st" style="background:rgba(255,255,255,.05);color:var(--text2)">规划中</div></div>
-      <div class="tli"><div class="dot"></div><div class="ph">Phase 4</div><div class="dd">规模化<br>第13-24周</div><div class="st" style="background:rgba(255,255,255,.05);color:var(--text2)">远期</div></div>
-    </div>
-    <div style="background:rgba(108,92,231,.08);border:1px solid rgba(108,92,231,.15);border-radius:10px;padding:14px 18px;margin-top:12px">
-      <div style="font-size:13px;font-weight:600;color:var(--accent);margin-bottom:6px">Phase 1 本周任务</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:12px;color:var(--text2)">
-        <div>🔴 修复假数据 · 1天 · Codex</div>
-        <div>🔴 生成页面独立URL · 2天 · Codex</div>
-        <div>🟡 表单页面生成 · 2天 · Codex</div>
-        <div>🟡 工作台页面生成 · 2天 · Codex</div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- 10/14 KPI -->
-<div class="slide" data-slide="9">
-  <div class="slide-content">
-    <div class="tagline" style="background:rgba(108,92,231,.12);border-color:rgba(108,92,231,.25)">🛠️ 执行视角</div>
-    <h2>怎么衡量 <span class="hl">成功</span>？</h2>
-    <div class="divider"></div>
-    <div class="kpi-grid">
-      <div class="kpi"><div class="kv">50,000</div><div class="kl">Q4目标MAU</div></div>
-      <div class="kpi" style="border-color:rgba(0,206,201,.12)"><div class="kv">5%→8%</div><div class="kl">付费转化率</div></div>
-      <div class="kpi"><div class="kv">85%</div><div class="kl">月留存目标</div></div>
-      <div class="kpi" style="border-color:rgba(253,121,168,.12)"><div class="kv" style="background:linear-gradient(135deg,var(--accent3),var(--orange));-webkit-background-clip:text">50+</div><div class="kl">NPS净推荐值</div></div>
-    </div>
-    <div style="margin-top:16px;font-size:13px;color:var(--text2)">各阶段成功标志：</div>
-    <table style="font-size:12px">
-      <tr><th style="width:20%">阶段</th><th>成功标志</th></tr>
-      <tr><td style="color:var(--accent);font-weight:600">Phase 1</td><td>可注册、3种页面类型、独立URL访问</td></tr>
-      <tr><td style="color:var(--accent2);font-weight:600">Phase 2</td><td>NPS≥30，月留存≥70%</td></tr>
-      <tr><td style="color:var(--accent3);font-weight:600">Phase 3</td><td>月收入¥5万+，付费用户200+</td></tr>
-      <tr><td style="color:var(--orange);font-weight:600">Phase 4</td><td>月收入¥50万+，年化¥600万+</td></tr>
-    </table>
-  </div>
-</div>
-
-<!-- 11/14 风险 -->
-<div class="slide" data-slide="10">
-  <div class="slide-content">
-    <div class="tagline" style="background:rgba(108,92,231,.12);border-color:rgba(108,92,231,.25)">🛠️ 执行视角</div>
-    <h2>风险与 <span class="hl">应对</span></h2>
-    <div class="divider"></div>
-    <table class="risk-table" style="font-size:12px">
-      <tr><th style="width:22%">风险</th><th style="width:12%">概率</th><th style="width:12%">影响</th><th>应对策略</th></tr>
-      <tr><td>大厂入局</td><td class="h">高</td><td class="m">中</td><td>聚焦垂直场景做深，不做泛平台</td></tr>
-      <tr><td>AI模型成本上升</td><td class="m">中</td><td class="h">高</td><td>多模型策略+小模型兜底</td></tr>
-      <tr><td>用户留存率低</td><td class="m">中</td><td class="h">高</td><td>强Onboarding+首日引导+模板推荐</td></tr>
-      <tr><td>数据合规风险</td><td class="m">中</td><td class="h">高</td><td>企业版私有部署，数据不出域</td></tr>
-      <tr><td>生成质量不稳定</td><td class="m">中</td><td class="m">中</td><td>固化提示词+人工审核机制</td></tr>
-      <tr><td>AI工具单点故障</td><td class="l">低</td><td class="m">中</td><td>多AI兜底+余额监控告警</td></tr>
-    </table>
-  </div>
-</div>
-
-<!-- 13/15 客户故事 -->
-<div class="slide" data-slide="12">
-  <div class="slide-content">
-    <div class="tagline" style="background:rgba(0,206,201,.12);border-color:rgba(0,206,201,.25);color:var(--accent2)">🤝 客户视角</div>
-    <h2>三个真实 <span class="hl">客户故事</span></h2>
-    <div class="divider"></div>
-    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:14px">
-      <div class="card" style="padding:14px;border-left:3px solid var(--orange)">
-        <div style="font-size:11px;color:var(--orange);font-weight:600">🍰 蛋糕店 · 小陈</div>
-        <p style="font-size:11px;margin-top:6px;line-height:1.6">微信接单记便利贴→丢了单→客户跑了</p>
-        <div style="font-size:11px;color:var(--accent2);margin-top:6px">说句话→手机订单工具→不再丢单</div>
-        <div style="font-size:10px;color:var(--text2);margin-top:4px">"早知道就好了"</div>
-      </div>
-      <div class="card" style="padding:14px;border-left:3px solid var(--accent)">
-        <div style="font-size:11px;color:var(--accent);font-weight:600">📊 贸易公司 · 王姐</div>
-        <p style="font-size:11px;margin-top:6px;line-height:1.6">销售各管各的Excel→离职带走客户→管理黑洞</p>
-        <div style="font-size:11px;color:var(--accent2);margin-top:6px">说句话→CRM→团队数据一目了然</div>
-        <div style="font-size:10px;color:var(--text2);margin-top:4px">"早三年能多赚一倍"</div>
-      </div>
-      <div class="card" style="padding:14px;border-left:3px solid var(--accent3)">
-        <div style="font-size:11px;color:var(--accent3);font-weight:600">🏗️ 起重机厂 · 张总</div>
-        <p style="font-size:11px;margin-top:6px;line-height:1.6">报价2小时/次→接单算不过来→错失生意</p>
-        <div style="font-size:11px;color:var(--accent2);margin-top:6px">说句话→报价30分钟→接单量+30%</div>
-        <div style="font-size:10px;color:var(--text2);margin-top:4px">"老李终于不用整天算了"</div>
-      </div>
-    </div>
-    <div style="margin-top:14px;background:rgba(108,92,231,.06);border:1px solid rgba(108,92,231,.12);border-radius:10px;padding:12px 18px;text-align:center">
-      <span style="font-size:12px;color:var(--text2)">💡 瞬搭不适合：复杂审批流 / 大型电商 / 金融级系统。适合的是：<strong style="color:#fff;">你工作中"要是有个小工具就好了"的想法，30秒变现实</strong></span>
-    </div>
-  </div>
-</div>
-
-<!-- 14/15 案例 -->
-<div class="slide" data-slide="13">
-  <div class="slide-content">
-    <div class="tagline" style="background:rgba(0,206,201,.12);border-color:rgba(0,206,201,.25);color:var(--accent2)">🤝 客户视角</div>
-    <h2>真实案例：<span class="hl">起重机报价系统</span></h2>
-    <div class="divider"></div>
-    <div class="case-box">
-      <div style="font-size:13px;color:var(--accent3);font-weight:600">🏆 已落地的验证</div>
-      <div style="margin-top:10px;font-size:14px;color:var(--text2);line-height:1.8">
-        <strong style="color:#fff">客户：</strong>一家起重机生产制造企业<br>
-        <strong style="color:#fff">痛点：</strong>每次报价需工程师人工查参数、手工计算，耗时<strong style="color:var(--accent3)">数小时</strong><br>
-        <strong style="color:#fff">方案：</strong>配件库数字化 → AI智能匹配 → 自动生成报价+申报报告<br>
-        <strong style="color:#fff">结果：</strong><strong style="color:var(--accent2);font-size:18px">数小时 → 30分钟</strong>
-      </div>
-      <div class="case-flow">
-        <span>📦 配件库</span><span class="ar">→</span><span>🧠 AI推理</span><span class="ar">→</span><span>📄 报价/报告</span>
-      </div>
-    </div>
-    <div class="card-grid" style="grid-template-columns:repeat(3,1fr);margin-top:14px">
-      <div class="card" style="padding:14px;text-align:center"><div style="font-size:13px;color:var(--accent2);font-weight:700">✓ 真实客户</div><p style="font-size:11px">非Demo，真实业务已跑通</p></div>
-      <div class="card" style="padding:14px;text-align:center"><div style="font-size:13px;color:var(--accent);font-weight:700">✓ 持续使用</div><p style="font-size:11px">不是一次性，真正在生产中用</p></div>
-      <div class="card" style="padding:14px;text-align:center"><div style="font-size:13px;color:var(--orange);font-weight:700">✓ 可复制</div><p style="font-size:11px">同类制造企业可直接复用</p></div>
-    </div>
-  </div>
-</div>
-
-<!-- 14/14 END -->
-<div class="slide" data-slide="13">
-  <div class="slide-content center-content">
-    <div class="tagline">🌐 立即体验</div>
-    <h1 style="font-size:clamp(32px,4vw,52px)">从想法到产品</h1>
-    <h1 style="font-size:clamp(32px,4vw,52px);margin-top:-4px">只需 <span style="background:linear-gradient(135deg,var(--accent2),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">一句话</span></h1>
-    <p class="subtitle">「瞬搭」· 让每个人都能创造自己的软件工具</p>
-    <div style="margin-top:30px;display:flex;gap:14px;flex-wrap:wrap;justify-content:center">
-      <a href="https://ai-tau-jet-97.vercel.app/" target="_blank" style="display:inline-block;background:linear-gradient(135deg,var(--accent),#8b7cf7);color:#fff;padding:12px 32px;border-radius:40px;text-decoration:none;font-size:15px;font-weight:600;box-shadow:0 6px 25px rgba(108,92,231,.3)">🚀 体验平台</a>
-      <a href="https://sabina86589089.github.io/ai-platform-ppt/" target="_blank" style="display:inline-block;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:#fff;padding:12px 32px;border-radius:40px;text-decoration:none;font-size:15px;font-weight:500">📖 查看方案</a>
-    </div>
-    <div style="margin-top:40px;border-top:1px solid rgba(255,255,255,.05);padding-top:18px;width:100%;max-width:400px">
-      <p style="font-size:12px;color:var(--text2);text-align:center">
-        🤖 由 Hermes Agent 根据娜娜的商业思维迭代生成<br>
-        <span style="font-size:10px">V2.1 · 2026年6月 · 娜娜 × Hermes 联合出品</span>
-      </p>
-    </div>
-  </div>
-</div>
-
-</div>
-
-<div class="nav">
-  <button class="nav-btn" id="prevBtn">◀</button>
-  <div class="nav-dots" id="dots"></div>
-  <span class="nav-page" id="pageNum">1 / 15</span>
-  <button class="nav-btn" id="nextBtn">▶</button>
-</div>
-
-<script>
-(function(){
-  const s=document.querySelectorAll('.slide'),t=s.length;let c=0;
-  function g(i){if(i<0||i>=t)return;s.forEach(x=>x.classList.remove('active'));s[i].classList.add('active');c=i;u();s[i].scrollTop=0}
-  function u(){document.querySelectorAll('.nav-dot').forEach((d,i)=>d.classList.toggle('active',i===c));document.getElementById('pageNum').textContent=c+1+' / '+t}
-  const dc=document.getElementById('dots');
-  for(let i=0;i<t;i++){const d=document.createElement('div');d.className='nav-dot'+(i===0?' active':'');d.addEventListener('click',()=>g(i));dc.appendChild(d)}
-  document.getElementById('prevBtn').addEventListener('click',()=>g(c-1));
-  document.getElementById('nextBtn').addEventListener('click',()=>g(c+1));
-  document.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key==='ArrowDown'||e.key===' '){e.preventDefault();g(c+1)}else if(e.key==='ArrowLeft'||e.key==='ArrowUp'){e.preventDefault();g(c-1)}else if(e.key==='Home'){e.preventDefault();g(0)}else if(e.key==='End'){e.preventDefault();g(t-1)}});
-  let tx=0;document.addEventListener('touchstart',e=>{tx=e.changedTouches[0].screenX});document.addEventListener('touchend',e=>{const d=tx-e.changedTouches[0].screenX;if(Math.abs(d)>50){d>0?g(c+1):g(c-1)}});
-})();
-</script>
-</body>
-</html>
+1|1|<!DOCTYPE html>
+2|2|<html lang="zh-CN">
+3|3|<head>
+4|4|<meta charset="UTF-8">
+5|5|<meta name="viewport" content="width=device-width, initial-scale=1.0">
+6|6|<title>瞬搭 · AI快速生成平台 — 商业计划书</title>
+7|7|<style>
+8|8|  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap');
+9|9|  *{margin:0;padding:0;box-sizing:border-box}
+10|10|  :root{--bg:#060613;--surface:#0c0c24;--surface2:#16163a;--accent:#6c5ce7;--accent2:#00cec9;--accent3:#fd79a8;--orange:#fdcb6e;--text:#e8e8f0;--text2:#8888aa;--glow:rgba(108,92,231,0.25)}
+11|11|  body{font-family:'Noto Sans SC',-apple-system,sans-serif;background:var(--bg);color:var(--text);overflow:hidden;height:100vh;width:100vw}
+12|12|  .slides{height:100vh;width:100vw;position:relative}
+13|13|  .slide{position:absolute;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:50px 70px;opacity:0;transform:scale(.95);transition:opacity .5s ease,transform .5s ease;pointer-events:none;overflow-y:auto}
+14|14|  .slide.active{opacity:1;transform:scale(1);pointer-events:auto;z-index:10}
+15|15|  .grid-bg{position:fixed;top:0;left:0;width:100%;height:100%;background-image:linear-gradient(rgba(108,92,231,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(108,92,231,.03) 1px,transparent 1px);background-size:50px 50px;pointer-events:none;z-index:0}
+16|16|  .glow-orb{position:fixed;border-radius:50%;pointer-events:none;z-index:0;filter:blur(80px);opacity:.2}
+17|17|  .glow-orb:nth-child(1){width:400px;height:400px;background:var(--accent);top:-100px;right:-100px}
+18|18|  .glow-orb:nth-child(2){width:300px;height:300px;background:var(--accent2);bottom:-50px;left:-50px}
+19|19|  .glow-orb:nth-child(3){width:250px;height:250px;background:var(--accent3);top:50%;left:50%;transform:translate(-50%,-50%)}
+20|20|  .nav{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:12px;z-index:100;background:rgba(12,12,36,.85);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.08);border-radius:40px;padding:8px 20px}
+21|21|  .nav-btn{background:none;border:1px solid rgba(255,255,255,.12);color:var(--text2);width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;transition:all .3s}
+22|22|  .nav-btn:hover{border-color:var(--accent);color:var(--text)}
+23|23|  .nav-dots{display:flex;gap:5px;margin:0 6px}
+24|24|  .nav-dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.12);cursor:pointer;transition:all .3s}
+25|25|  .nav-dot.active{background:var(--accent);box-shadow:0 0 10px var(--glow);width:20px;border-radius:3px}
+26|26|  .nav-page{color:var(--text2);font-size:12px;font-weight:500;min-width:40px;text-align:center}
+27|27|  .slide-content{max-width:1100px;width:100%;position:relative;z-index:1}
+28|28|  .center-content{display:flex;flex-direction:column;align-items:center;text-align:center}
+29|29|  h1{font-size:clamp(36px,4.5vw,64px);font-weight:900;background:linear-gradient(135deg,#fff 0%,#6c5ce7 40%,#00cec9 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1.2}
+30|30|  h2{font-size:clamp(24px,3vw,40px);font-weight:700;color:#fff;margin-bottom:12px;line-height:1.3}
+31|31|  h2 .hl{background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+32|32|  h3{font-size:18px;font-weight:600;color:#fff;margin-bottom:6px}
+33|33|  p,.body-text{font-size:15px;line-height:1.7;color:var(--text2);font-weight:300}
+34|34|  .tagline{display:inline-block;background:rgba(108,92,231,.12);border:1px solid rgba(108,92,231,.25);color:var(--accent);padding:5px 16px;border-radius:20px;font-size:12px;font-weight:500;margin-bottom:12px}
+35|35|  .subtitle{font-size:16px;color:var(--text2);font-weight:300;margin-top:8px}
+36|36|  .divider{width:50px;height:3px;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:2px;margin:12px 0 20px}
+37|37|  .card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px;margin-top:20px}
+38|38|  .card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:20px;transition:all .3s}
+39|39|  .card:hover{border-color:rgba(108,92,231,.3);transform:translateY(-3px);box-shadow:0 10px 30px rgba(108,92,231,.08)}
+40|40|  .card .icon{font-size:28px;margin-bottom:8px;display:block}
+41|41|  .card h4{font-size:15px;font-weight:600;color:#fff;margin-bottom:4px}
+42|42|  .card p{font-size:13px;color:var(--text2);line-height:1.6}
+43|43|  .card .big{font-size:32px;font-weight:900;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:2px}
+44|44|  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:16px}
+45|45|  .arch-flow{display:flex;align-items:center;justify-content:center;gap:10px;margin:24px 0;flex-wrap:wrap}
+46|46|  .arch-box{background:rgba(255,255,255,.03);border:1px solid rgba(108,92,231,.2);border-radius:12px;padding:14px 18px;text-align:center;flex:1;min-width:120px}
+47|47|  .arch-box .lbl{font-size:13px;font-weight:600;color:#fff}
+48|48|  .arch-box .dsc{font-size:11px;color:var(--text2);margin-top:2px}
+49|49|  .arch-arrow{color:var(--accent);font-size:18px;opacity:.5}
+50|50|  .badge{display:inline-block;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:6px;padding:4px 12px;font-size:12px;color:var(--text2);margin:2px}
+51|51|  .badge.ai{border-color:rgba(108,92,231,.3);color:var(--accent)}
+52|52|  .badge.gr{border-color:rgba(0,206,201,.3);color:var(--accent2)}
+53|53|  .badge.red{border-color:rgba(253,121,168,.3);color:var(--accent3)}
+54|54|  .badge.yl{border-color:rgba(253,203,110,.3);color:var(--orange)}
+55|55|  .pricing{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:16px}
+56|56|  .pcard{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:16px;text-align:center}
+57|57|  .pcard.feat{border-color:var(--accent);background:rgba(108,92,231,.06);transform:scale(1.04)}
+58|58|  .pcard .pn{font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.5px}
+59|59|  .pcard .pr{font-size:24px;font-weight:900;color:#fff;margin:6px 0}
+60|60|  .pcard .pr span{font-size:13px;font-weight:400;color:var(--text2)}
+61|61|  .pcard .pf{font-size:12px;color:var(--text2);line-height:2}
+62|62|  .tl{display:flex;gap:0;margin:24px 0;position:relative}
+63|63|  .tl::before{content:'';position:absolute;top:24px;left:30px;right:30px;height:2px;background:linear-gradient(90deg,var(--accent),var(--accent2),var(--accent3),var(--orange));opacity:.25}
+64|64|  .tli{flex:1;text-align:center;position:relative;padding:0 8px}
+65|65|  .tli .dot{width:14px;height:14px;border-radius:50%;margin:0 auto 10px;position:relative;z-index:2}
+66|66|  .tli:nth-child(1) .dot{background:var(--accent);box-shadow:0 0 16px var(--glow)}
+67|67|  .tli:nth-child(2) .dot{background:var(--accent2)}
+68|68|  .tli:nth-child(3) .dot{background:var(--accent3)}
+69|69|  .tli:nth-child(4) .dot{background:var(--orange)}
+70|70|  .tli .ph{font-size:13px;font-weight:700;color:#fff;margin-bottom:2px}
+71|71|  .tli .dd{font-size:11px;color:var(--text2);line-height:1.5}
+72|72|  .tli .st{font-size:10px;display:inline-block;padding:2px 8px;border-radius:8px;margin-top:4px}
+73|73|  .tli:nth-child(1) .st{background:rgba(0,206,201,.12);color:var(--accent2)}
+74|74|  .tli:nth-child(2) .st{background:rgba(108,92,231,.12);color:var(--accent)}
+75|75|  .tli:nth-child(3) .st,.tli:nth-child(4) .st{background:rgba(255,255,255,.05);color:var(--text2)}
+76|76|  table{width:100%;border-collapse:separate;border-spacing:0;margin-top:14px;border-radius:10px;overflow:hidden;font-size:13px}
+77|77|  th{background:rgba(108,92,231,.12);color:var(--text);font-weight:600;padding:10px 14px;text-align:left;border-bottom:1px solid rgba(255,255,255,.04)}
+78|78|  td{padding:9px 14px;color:var(--text2);border-bottom:1px solid rgba(255,255,255,.03)}
+79|79|  tr:hover td{background:rgba(255,255,255,.02)}
+80|80|  .hcell{color:var(--accent2);font-weight:500}
+81|81|  .kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px}
+82|82|  .kpi{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px;text-align:center}
+83|83|  .kpi .kv{font-size:22px;font-weight:900;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+84|84|  .kpi .kl{font-size:11px;color:var(--text2);margin-top:2px}
+85|85|  .case-box{background:linear-gradient(135deg,rgba(108,92,231,.06),rgba(0,206,201,.06));border:1px solid rgba(108,92,231,.15);border-radius:16px;padding:24px;margin-top:16px}
+86|86|  .case-flow{display:flex;align-items:center;gap:6px;margin-top:12px;flex-wrap:wrap}
+87|87|  .case-flow span{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:6px;padding:6px 12px;font-size:12px;color:var(--text)}
+88|88|  .case-flow .ar{border:none;background:none;color:var(--accent);font-size:16px;padding:0}
+89|89|  .audience-badge{padding:6px 16px;border-radius:20px;font-size:12px;font-weight:600;display:inline-block}
+90|90|  .audience-badge.inv{background:rgba(253,203,110,.12);color:var(--orange);border:1px solid rgba(253,203,110,.2)}
+91|91|  .audience-badge.exc{background:rgba(108,92,231,.12);color:var(--accent);border:1px solid rgba(108,92,231,.2)}
+92|92|  .audience-badge.cli{background:rgba(0,206,201,.12);color:var(--accent2);border:1px solid rgba(0,206,201,.2)}
+93|93|  .risk-table td:first-child{font-weight:500;color:#fff}
+94|94|  .risk-table .h{background:rgba(253,121,168,.15);color:var(--accent3)}
+95|95|  .risk-table .m{background:rgba(253,203,110,.1);color:var(--orange)}
+96|96|  .risk-table .l{background:rgba(0,206,201,.1);color:var(--accent2)}
+97|97|  ::-webkit-scrollbar{width:3px}
+98|98|  ::-webkit-scrollbar-track{background:transparent}
+99|99|  ::-webkit-scrollbar-thumb{background:rgba(108,92,231,.25);border-radius:2px}
+100|100|  @media(max-width:768px){
+101|101|    .slide{padding:24px 18px}
+102|102|    .card-grid{grid-template-columns:1fr 1fr}
+103|103|    .two-col{grid-template-columns:1fr}
+104|104|    .pricing{grid-template-columns:1fr 1fr}
+105|105|    .arch-flow{flex-direction:column;gap:4px}
+106|106|    .arch-arrow{transform:rotate(90deg)}
+107|107|    .tl{flex-direction:column;gap:12px}
+108|108|    .tl::before{display:none}
+109|109|    .kpi-grid{grid-template-columns:1fr 1fr}
+110|110|  }
+111|111|</style>
+112|112|</head>
+113|113|<body>
+114|114|<div class="grid-bg"></div>
+115|115|<div class="glow-orb"></div>
+116|116|<div class="glow-orb"></div>
+117|117|<div class="glow-orb" style="opacity:.1"></div>
+118|118|
+119|119|<div class="slides">
+120|120|
+121|121|<!-- 1 / 15 COVER -->
+122|122|<div class="slide active" data-slide="0">
+123|123|  <div class="slide-content center-content">
+124|124|    <div class="tagline">🚀 AI软件生产线 · 首个深耕制造业</div>
+125|125|    <h1 class="glow-text" style="font-size:clamp(40px,5vw,72px)">「瞬搭」</h1>
+126|126|    <p style="font-size:18px;color:var(--accent2);font-weight:400;margin-top:-4px">AI软件生产线</p>
+127|127|    <p class="subtitle">客户的需求进去，可用的系统出来</p>
+128|128|    <div style="margin-top:24px;display:flex;gap:10px;flex-wrap:wrap;justify-content:center">
+129|129|      <span class="badge ai">🏭 深耕制造业</span>
+130|130|      <span class="badge gr">⚡ 需求→系统一站式</span>
+131|131|      <span class="badge red">🎯 零IT门槛</span>
+132|132|      <span class="badge yl">📈 可扩展零售/贸易/服务</span>
+133|133|    </div>
+134|134|    <div style="margin-top:40px;border-top:1px solid rgba(255,255,255,.05);padding-top:18px;width:100%;max-width:450px;display:flex;justify-content:space-between">
+135|135|      <span style="color:var(--text2);font-size:12px">📅 2026.06</span>
+136|136|      <span style="color:var(--accent2);font-size:12px">👤 娜娜 · 创始人/产品经理</span>
+137|137|    </div>
+138|138|  </div>
+139|139|</div>
+140|140|
+141|141|<!-- 2 / 15 三层受众 -->
+142|142|<div class="slide" data-slide="1">
+143|143|  <div class="slide-content center-content">
+144|144|    <div class="tagline">📖 阅读指南</div>
+145|145|    <h2>给 <span class="hl">三种人</span> 看的方案</h2>
+146|146|    <div class="divider" style="margin:12px auto 24px"></div>
+147|147|    <div class="two-col" style="max-width:800px;gap:16px">
+148|148|      <div class="card" style="border-left:3px solid var(--orange)">
+149|149|        <span class="audience-badge inv">🏦 投资人</span>
+150|150|        <p style="margin-top:12px;font-size:13px">市场多大？凭什么赢？<br>谁在做？钱怎么赚？多久回本？</p>
+151|151|        <div style="margin-top:8px;font-size:11px;color:var(--orange)">→ 看第4-8页</div>
+152|152|      </div>
+153|153|      <div class="card" style="border-left:3px solid var(--accent)">
+154|154|        <span class="audience-badge exc">🛠️ 执行方</span>
+155|155|        <p style="margin-top:12px;font-size:13px">怎么建？多久？<br>有什么坑？怎么衡量成功？</p>
+156|156|        <div style="margin-top:8px;font-size:11px;color:var(--accent)">→ 看第9-12页</div>
+157|157|      </div>
+158|158|    </div>
+159|159|    <div class="card" style="max-width:400px;border-left:3px solid var(--accent2);margin-top:0">
+160|160|      <span class="audience-badge cli">🤝 目标客户</span>
+161|161|      <p style="margin-top:12px;font-size:13px">能解决我什么问题？多少钱？怎么用？</p>
+162|162|      <div style="margin-top:8px;font-size:11px;color:var(--accent2)">→ 看第13-15页</div>
+163|163|    </div>
+164|164|  </div>
+165|165|</div>
+166|166|
+167|167|<!-- 3/15 产品到底是什么 -->
+168|168|<div class="slide" data-slide="2">
+169|169|  <div class="slide-content">
+170|170|    <div class="tagline">🧭 先把这事说清楚</div>
+171|171|    <h2>这产品到底是 <span class="hl">个啥</span>？</h2>
+172|172|    <div class="divider"></div>
+173|173|    <div class="center-content">
+174|174|      <div style="background:rgba(108,92,231,.06);border:1px solid rgba(108,92,231,.15);border-radius:14px;padding:20px 28px;max-width:700px">
+175|175|        <p style="font-size:18px;color:#fff;font-weight:600">一条AI软件生产线</p>
+176|176|        <p style="font-size:14px;color:var(--text2);margin-top:6px">客户的需求进去，可用的系统出来</p>
+177|177|        <p style="font-size:12px;color:var(--text2);margin-top:2px">不是"生成一个页面"，是需求→分析→组装→验证→交付的完整流水线</p>
+178|178|      </div>
+179|179|    </div>
+180|180|    <div class="two-col" style="gap:12px;margin-top:14px">
+181|181|      <div style="background:rgba(108,92,231,.06);border:1px solid rgba(108,92,231,.15);border-radius:10px;padding:14px">
+182|182|        <div style="font-size:12px;color:var(--accent);font-weight:600;margin-bottom:6px">V1-V3 我怎么说</div>
+183|183|        <p style="font-size:12px;color:var(--text2)">"一个在线工具生成器，说句话生成工具"</p>
+184|184|        <p style="font-size:11px;color:var(--accent3);margin-top:4px">❌ 太轻了，看不出深度</p>
+185|185|      </div>
+186|186|      <div style="background:rgba(0,206,201,.06);border:1px solid rgba(0,206,201,.15);border-radius:10px;padding:14px">
+187|187|        <div style="font-size:12px;color:var(--accent2);font-weight:600;margin-bottom:6px">✅ V4 正确理解</div>
+188|188|        <p style="font-size:12px;color:var(--text2)">"AI软件生产线——聚焦制造业，从需求到系统结构化交付"</p>
+189|189|      </div>
+190|190|    </div>
+191|191|    <div style="display:flex;gap:10px;margin-top:14px;justify-content:center;flex-wrap:wrap">
+192|192|      <div class="card" style="padding:12px;max-width:220px;text-align:center;border-left:3px solid var(--accent)">
+193|193|        <div style="font-size:11px;color:var(--accent);font-weight:600">👤 客户（付钱）</div>
+194|194|        <p style="font-size:11px;margin-top:4px">制造业中小企业老板<br>生产/销售总监</p>
+195|195|      </div>
+196|196|      <div class="card" style="padding:12px;max-width:220px;text-align:center;border-left:3px solid var(--accent2)">
+197|197|        <div style="font-size:11px;color:var(--accent2);font-weight:600">👤 用户（用）</div>
+198|198|        <p style="font-size:11px;margin-top:4px">销售/跟单员/仓管/质检员<br>手机或PC操作</p>
+199|199|      </div>
+200|200|    </div>
+201|201|    <div style="margin-top:10px;background:rgba(108,92,231,.06);border-radius:8px;padding:8px 16px;text-align:center">
+202|202|      <span style="font-size:11px;color:var(--text2)">和秒哒/Codex/Claude Code的区别？</span><span style="font-size:11px;color:var(--accent2)"> 它们给"会折腾的人"用，瞬搭给"只要结果"的企业用，且聚焦制造业</span>
+203|203|    </div>
+204|204|  </div>
+205|205|</div>
+206|206|
+207|207|<!-- 4/15 WHY NOW -->
+208|208|<div class="slide" data-slide="3">
+209|209|  <div class="slide-content">
+210|210|    <div class="tagline" style="background:rgba(253,203,110,.12);border-color:rgba(253,203,110,.25);color:var(--orange)">🏦 投资视角</div>
+211|211|    <h2>为什么是 <span class="hl">现在</span>？</h2>
+212|212|    <div class="divider"></div>
+213|213|    <div class="kpi-grid">
+214|214|      <div class="kpi"><div class="kv">$290亿</div><div class="kl">全球低代码市场</div></div>
+215|215|      <div class="kpi" style="border-color:rgba(0,206,201,.12)"><div class="kv" style="background:linear-gradient(135deg,var(--accent2),var(--accent));-webkit-background-clip:text">20-25%</div><div class="kl">年复合增长率</div></div>
+216|216|      <div class="kpi"><div class="kv">5200万+</div><div class="kl">中国中小企业</div></div>
+217|217|      <div class="kpi" style="border-color:rgba(253,121,168,.12)"><div class="kv" style="background:linear-gradient(135deg,var(--accent3),var(--orange));-webkit-background-clip:text">80%</div><div class="kl">没有数字化工具</div></div>
+218|218|    </div>
+219|219|    <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:18px 22px;margin-top:18px">
+220|220|      <div style="font-size:13px;color:var(--text2);line-height:2;font-family:monospace">
+221|221|        2023前：低代码门槛高，拖拽式操作仍有学习成本<br>
+222|222|        2024&nbsp;&nbsp;：AI代码生成能力突破，但工具面向开发者<br>
+223|223|        2025&nbsp;&nbsp;：Bolt.new/Lovable 验证了自然语言→应用的市场<br>
+224|224|        2026&nbsp;&nbsp;：<span style="color:var(--accent2);font-weight:700">市场教育完成，产品仍处早期——窗口期还在</span><br>
+225|225|        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↑<span style="color:var(--accent);font-weight:700"> 瞬搭在这里</span>
+226|226|      </div>
+227|227|    </div>
+228|228|  </div>
+229|229|</div>
+230|230|
+231|231|<!-- 4 / 15 WHY US -->
+232|232|<div class="slide" data-slide="4">
+233|233|  <div class="slide-content">
+234|234|    <div class="tagline" style="background:rgba(253,203,110,.12);border-color:rgba(253,203,110,.25);color:var(--orange)">🏦 投资视角</div>
+235|235|    <h2>为什么是 <span class="hl">我们</span>？</h2>
+236|236|    <div class="divider"></div>
+237|237|    <div class="two-col">
+238|238|      <div class="card" style="border-left:3px solid var(--orange)">
+239|239|        <span style="font-size:12px;color:var(--orange);font-weight:600">👤 创始人</span>
+240|240|        <p style="margin-top:8px;font-size:13px">我是娜娜，一个不会写代码的产品经理。过去几年一直在做一件事：<span style="color:#fff">用AI把商业想法变成可用的产品。</span></p>
+241|241|        <p style="margin-top:6px;font-size:13px">从"给自己做个客户管理工具要排期3周"开始，到形成<span style="color:#fff">Hermes(规划)+Codex(执行)</span>的AI流水线，再到把这条流水线产品化为「瞬搭」。</p>
+242|242|      </div>
+243|243|      <div class="card" style="border-left:3px solid var(--accent2)">
+244|244|        <span style="font-size:12px;color:var(--accent2);font-weight:600">🤖 AI团队优势</span>
+245|245|        <div style="margin-top:8px">
+246|246|          <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:13px"><span style="color:var(--text2)">团队规模</span><span style="color:#fff">1人+AI×2 vs 传统5-8人</span></div>
+247|247|          <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:13px"><span style="color:var(--text2)">月人力成本</span><span style="color:var(--accent2)">¥1,000 vs ¥15-30万</span></div>
+248|248|          <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:13px"><span style="color:var(--text2)">开发速度</span><span style="color:#fff">按分钟 vs 按天</span></div>
+249|249|          <div style="display:flex;justify-content:space-between;padding:6px 0;font-size:13px"><span style="color:var(--text2)">可扩展性</span><span style="color:var(--accent2)">加AI≈零边际成本</span></div>
+250|250|        </div>
+251|251|      </div>
+252|252|    </div>
+253|253|  </div>
+254|254|</div>
+255|255|
+256|256|<!-- 5 / 15 竞争 -->
+257|257|<div class="slide" data-slide="5">
+258|258|  <div class="slide-content">
+259|259|    <div class="tagline" style="background:rgba(253,203,110,.12);border-color:rgba(253,203,110,.25);color:var(--orange)">🏦 投资视角</div>
+260|260|    <h2>凭什么 <span class="hl">赢</span>？</h2>
+261|261|    <div class="divider"></div>
+262|262|    <table>
+263|263|      <tr><th style="width:20%">竞品</th><th style="width:25%">用户是谁</th><th style="width:25%">怎么用</th><th style="width:30%">瞬搭差异</th></tr>
+264|264|      <tr><td>秒哒</td><td>想搭应用的人</td><td>选模板→配组件</td><td class="hcell">纯说话，不用学平台</td></tr>
+265|265|      <tr><td>Codex</td><td>会跟AI协作的人</td><td>AI写代码→自部署</td><td class="hcell">全自动部署+数据+分享</td></tr>
+266|266|      <tr><td>Claude Code</td><td>会用终端的开发者</td><td>终端AI→自部署</td><td class="hcell">零门槛，打开浏览器就行</td></tr>
+267|267|      <tr><td>传统外包</td><td>有预算的企业</td><td>需求文档→开发</td><td class="hcell">30秒原型，¥0起步</td></tr>
+268|268|    </table>
+269|269|    <div class="card-grid" style="grid-template-columns:repeat(4,1fr);margin-top:16px">
+270|270|      <div class="card" style="padding:12px;text-align:center"><div style="font-size:13px;font-weight:600;color:var(--accent)">数据飞轮</div><p style="font-size:11px">用越多→越精准</p></div>
+271|271|      <div class="card" style="padding:12px;text-align:center"><div style="font-size:13px;font-weight:600;color:var(--accent2)">切换成本</div><p style="font-size:11px">数据沉淀在平台</p></div>
+272|272|      <div class="card" style="padding:12px;text-align:center"><div style="font-size:13px;font-weight:600;color:var(--accent3)">AI原生</div><p style="font-size:11px">迭代快一个数量级</p></div>
+273|273|      <div class="card" style="padding:12px;text-align:center"><div style="font-size:13px;font-weight:600;color:var(--orange)">先发优势</div><p style="font-size:11px">国内细分空白</p></div>
+274|274|    </div>
+275|275|  </div>
+276|276|</div>
+277|277|
+278|278|<!-- 6 / 15 商业模式 -->
+279|279|<div class="slide" data-slide="6">
+280|280|  <div class="slide-content">
+281|281|    <div class="tagline" style="background:rgba(253,203,110,.12);border-color:rgba(253,203,110,.25);color:var(--orange)">🏦 投资视角</div>
+282|282|    <h2>怎么 <span class="hl">赚钱</span>？</h2>
+283|283|    <div class="divider"></div>
+284|284|    <div class="pricing">
+285|285|      <div class="pcard"><div class="pn">免费版</div><div class="pr">¥0</div><div class="pf">10次/月<br>3个部署<br>100条数据</div></div>
+286|286|      <div class="pcard feat"><div class="pn">⭐ 专业版</div><div class="pr">¥99<span>/月</span></div><div class="pf">100次/月<br>不限部署<br>10万条数据</div></div>
+287|287|      <div class="pcard"><div class="pn">企业版</div><div class="pr">¥499<span>/月</span></div><div class="pf">不限次数<br>团队协作<br>私有化可选</div></div>
+288|288|      <div class="pcard" style="border-color:rgba(0,206,201,.2)"><div class="pn">🏢 私有部署</div><div class="pr">¥5万<span>起</span></div><div class="pf">企业独立部署<br>定制开发<br>专属支持</div></div>
+289|289|    </div>
+290|290|    <div class="card" style="margin-top:14px;padding:14px 18px">
+291|291|      <div style="display:flex;justify-content:space-between;align-items:center">
+292|292|        <div><span style="color:var(--text2);font-size:12px">📈 收入预测（保守）</span></div>
+293|293|        <div><span style="color:var(--accent2);font-size:12px">Q1盈亏平衡 → Q4年化¥120万 → 第2年¥600万</span></div>
+294|294|      </div>
+295|295|      <div style="margin-top:8px;font-size:12px;color:var(--text2)">关键假设：CAC≈¥0（内容引流）· 付费转化率5% · 月流失5% · 月固定成本¥3,000</div>
+296|296|    </div>
+297|297|  </div>
+298|298|</div>
+299|299|
+300|300|<!-- 7 / 15 融资 -->
+301|301|<div class="slide" data-slide="7">
+302|302|  <div class="slide-content">
+303|303|    <div class="tagline" style="background:rgba(253,203,110,.12);border-color:rgba(253,203,110,.25);color:var(--orange)">🏦 投资视角</div>
+304|304|    <h2>融资与 <span class="hl">里程碑</span></h2>
+305|305|    <div class="divider"></div>
+306|306|    <div class="two-col">
+307|307|      <div>
+308|308|        <h3 style="font-size:16px">资金用途（种子轮 ¥80万）</h3>
+309|309|        <div style="margin-top:8px">
+310|310|          <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:13px"><span style="color:var(--text2)">产品开发 40%</span><span style="color:var(--accent)">¥32万</span></div>
+311|311|          <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:13px"><span style="color:var(--text2)">市场推广 30%</span><span style="color:var(--accent2)">¥24万</span></div>
+312|312|          <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:13px"><span style="color:var(--text2)">团队（兼职UI+运营）20%</span><span style="color:var(--accent3)">¥16万</span></div>
+313|313|          <div style="display:flex;justify-content:space-between;padding:6px 0;font-size:13px"><span style="color:var(--text2)">运营储备 10%</span><span style="color:var(--orange)">¥8万</span></div>
+314|314|        </div>
+315|315|      </div>
+316|316|      <div>
+317|317|        <h3 style="font-size:16px">融资节奏</h3>
+318|318|        <div style="margin-top:8px">
+319|319|          <div style="background:rgba(108,92,231,.06);border:1px solid rgba(108,92,231,.15);border-radius:8px;padding:10px 14px;margin-bottom:6px">
+320|320|            <div style="font-size:12px;color:var(--accent);font-weight:600">种子轮 ¥50-80万 · 当前</div>
+321|321|            <div style="font-size:11px;color:var(--text2)">里程碑：MVP验证 + 首个付费客户</div>
+322|322|          </div>
+323|323|          <div style="background:rgba(0,206,201,.06);border:1px solid rgba(0,206,201,.15);border-radius:8px;padding:10px 14px;margin-bottom:6px">
+324|324|            <div style="font-size:12px;color:var(--accent2);font-weight:600">Pre-A ¥300-500万 · 第6个月</div>
+325|325|            <div style="font-size:11px;color:var(--text2)">月活5万+，月收入¥5万+</div>
+326|326|          </div>
+327|327|          <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:8px;padding:10px 14px">
+328|328|            <div style="font-size:12px;color:#fff;font-weight:600">A轮 ¥1,000-3,000万 · 第18个月</div>
+329|329|            <div style="font-size:11px;color:var(--text2)">年收入¥500万+，团队20人</div>
+330|330|          </div>
+331|331|        </div>
+332|332|      </div>
+333|333|    </div>
+334|334|  </div>
+335|335|</div>
+336|336|
+337|337|<!-- 8 / 15 产品架构 -->
+338|338|<div class="slide" data-slide="8">
+339|339|  <div class="slide-content">
+340|340|    <div class="tagline" style="background:rgba(108,92,231,.12);border-color:rgba(108,92,231,.25)">🛠️ 执行视角</div>
+341|341|    <h2>产品架构：<span class="hl">四层闭环</span></h2>
+342|342|    <div class="divider"></div>
+343|343|    <div class="arch-flow">
+344|344|      <div class="arch-box"><div class="lbl">🗣️ 用户输入</div><div class="dsc">一句话 · 描述 · 截图</div></div>
+345|345|      <div class="arch-arrow">→</div>
+346|346|      <div class="arch-box"><div class="lbl">🧠 AI推理引擎</div><div class="dsc">需求理解→架构→生成</div></div>
+347|347|      <div class="arch-arrow">→</div>
+348|348|      <div class="arch-box"><div class="lbl">📦 内容交付</div><div class="dsc">看板·表单·工作台·报表</div></div>
+349|349|      <div class="arch-arrow">→</div>
+350|350|      <div class="arch-box"><div class="lbl">🚀 部署交付</div><div class="dsc">一键部署 · 在线链接</div></div>
+351|351|    </div>
+352|352|    <div class="card-grid" style="grid-template-columns:repeat(4,1fr)">
+353|353|      <div class="card" style="padding:14px"><h4 style="font-size:14px">✅ 已完成</h4><p style="font-size:12px">需求解析引擎<br>6种字段模板<br>页面自动生成<br>线上部署可用</p></div>
+354|354|      <div class="card" style="padding:14px"><h4 style="font-size:14px;color:var(--accent3)">🔴 当前缺陷</h4><p style="font-size:12px">假数据<br>无独立URL<br>无用户系统<br>仅看板型</p></div>
+355|355|      <div class="card" style="padding:14px"><h4 style="font-size:14px;color:var(--accent2)">技术栈</h4><p style="font-size:12px">Next.js+React<br>Tailwind/shadcn<br>多模型AI调度<br>Vercel部署</p></div>
+356|356|      <div class="card" style="padding:14px"><h4 style="font-size:14px;color:var(--orange)">性能目标</h4><p style="font-size:12px">生成&lt;2s<br>并发100+<br>可用性99.5%<br>单次成本&lt;¥0.2</p></div>
+357|357|    </div>
+358|358|  </div>
+359|359|</div>
+360|360|
+361|361|<!-- 9 / 15 路线图 -->
+362|362|<div class="slide" data-slide="9">
+363|363|  <div class="slide-content">
+364|364|    <div class="tagline" style="background:rgba(108,92,231,.12);border-color:rgba(108,92,231,.25)">🛠️ 执行视角</div>
+365|365|    <h2>6个月 <span class="hl">执行路线</span></h2>
+366|366|    <div class="divider"></div>
+367|367|    <div class="tl">
+368|368|      <div class="tli"><div class="dot"></div><div class="ph">Phase 1</div><div class="dd">MVP完善<br>第1-2周</div><div class="st">WIP</div></div>
+369|369|      <div class="tli"><div class="dot"></div><div class="ph">Phase 2</div><div class="dd">体验升级<br>第3-6周</div><div class="st" style="background:rgba(108,92,231,.12);color:var(--accent)">待启动</div></div>
+370|370|      <div class="tli"><div class="dot"></div><div class="ph">Phase 3</div><div class="dd">商业化<br>第7-12周</div><div class="st" style="background:rgba(255,255,255,.05);color:var(--text2)">规划中</div></div>
+371|371|      <div class="tli"><div class="dot"></div><div class="ph">Phase 4</div><div class="dd">规模化<br>第13-24周</div><div class="st" style="background:rgba(255,255,255,.05);color:var(--text2)">远期</div></div>
+372|372|    </div>
+373|373|    <div style="background:rgba(108,92,231,.08);border:1px solid rgba(108,92,231,.15);border-radius:10px;padding:14px 18px;margin-top:12px">
+374|374|      <div style="font-size:13px;font-weight:600;color:var(--accent);margin-bottom:6px">Phase 1 本周任务</div>
+375|375|      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:12px;color:var(--text2)">
+376|376|        <div>🔴 修复假数据 · 1天 · Codex</div>
+377|377|        <div>🔴 生成页面独立URL · 2天 · Codex</div>
+378|378|        <div>🟡 表单页面生成 · 2天 · Codex</div>
+379|379|        <div>🟡 工作台页面生成 · 2天 · Codex</div>
+380|380|      </div>
+381|381|    </div>
+382|382|  </div>
+383|383|</div>
+384|384|
+385|385|<!-- 10 / 15 KPI -->
+386|386|<div class="slide" data-slide="10">
+387|387|  <div class="slide-content">
+388|388|    <div class="tagline" style="background:rgba(108,92,231,.12);border-color:rgba(108,92,231,.25)">🛠️ 执行视角</div>
+389|389|    <h2>怎么衡量 <span class="hl">成功</span>？</h2>
+390|390|    <div class="divider"></div>
+391|391|    <div class="kpi-grid">
+392|392|      <div class="kpi"><div class="kv">50,000</div><div class="kl">Q4目标MAU</div></div>
+393|393|      <div class="kpi" style="border-color:rgba(0,206,201,.12)"><div class="kv">5%→8%</div><div class="kl">付费转化率</div></div>
+394|394|      <div class="kpi"><div class="kv">85%</div><div class="kl">月留存目标</div></div>
+395|395|      <div class="kpi" style="border-color:rgba(253,121,168,.12)"><div class="kv" style="background:linear-gradient(135deg,var(--accent3),var(--orange));-webkit-background-clip:text">50+</div><div class="kl">NPS净推荐值</div></div>
+396|396|    </div>
+397|397|    <div style="margin-top:16px;font-size:13px;color:var(--text2)">各阶段成功标志：</div>
+398|398|    <table style="font-size:12px">
+399|399|      <tr><th style="width:20%">阶段</th><th>成功标志</th></tr>
+400|400|      <tr><td style="color:var(--accent);font-weight:600">Phase 1</td><td>可注册、3种页面类型、独立URL访问</td></tr>
+401|401|      <tr><td style="color:var(--accent2);font-weight:600">Phase 2</td><td>NPS≥30，月留存≥70%</td></tr>
+402|402|      <tr><td style="color:var(--accent3);font-weight:600">Phase 3</td><td>月收入¥5万+，付费用户200+</td></tr>
+403|403|      <tr><td style="color:var(--orange);font-weight:600">Phase 4</td><td>月收入¥50万+，年化¥600万+</td></tr>
+404|404|    </table>
+405|405|  </div>
+406|406|</div>
+407|407|
+408|408|<!-- 11 / 15 风险 -->
+409|409|<div class="slide" data-slide="11">
+410|410|  <div class="slide-content">
+411|411|    <div class="tagline" style="background:rgba(108,92,231,.12);border-color:rgba(108,92,231,.25)">🛠️ 执行视角</div>
+412|412|    <h2>风险与 <span class="hl">应对</span></h2>
+413|413|    <div class="divider"></div>
+414|414|    <table class="risk-table" style="font-size:12px">
+415|415|      <tr><th style="width:22%">风险</th><th style="width:12%">概率</th><th style="width:12%">影响</th><th>应对策略</th></tr>
+416|416|      <tr><td>大厂入局</td><td class="h">高</td><td class="m">中</td><td>聚焦垂直场景做深，不做泛平台</td></tr>
+417|417|      <tr><td>AI模型成本上升</td><td class="m">中</td><td class="h">高</td><td>多模型策略+小模型兜底</td></tr>
+418|418|      <tr><td>用户留存率低</td><td class="m">中</td><td class="h">高</td><td>强Onboarding+首日引导+模板推荐</td></tr>
+419|419|      <tr><td>数据合规风险</td><td class="m">中</td><td class="h">高</td><td>企业版私有部署，数据不出域</td></tr>
+420|420|      <tr><td>生成质量不稳定</td><td class="m">中</td><td class="m">中</td><td>固化提示词+人工审核机制</td></tr>
+421|421|      <tr><td>AI工具单点故障</td><td class="l">低</td><td class="m">中</td><td>多AI兜底+余额监控告警</td></tr>
+422|422|    </table>
+423|423|  </div>
+424|424|</div>
+425|425|
+426|426|<!-- 13/15 客户故事 -->
+427|427|<div class="slide" data-slide="12">
+428|428|  <div class="slide-content">
+429|429|    <div class="tagline" style="background:rgba(0,206,201,.12);border-color:rgba(0,206,201,.25);color:var(--accent2)">🤝 客户视角</div>
+430|430|    <h2>三个真实 <span class="hl">客户故事</span></h2>
+431|431|    <div class="divider"></div>
+432|432|    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:14px">
+433|433|      <div class="card" style="padding:14px;border-left:3px solid var(--orange)">
+434|434|        <div style="font-size:11px;color:var(--orange);font-weight:600">🍰 蛋糕店 · 小陈</div>
+435|435|        <p style="font-size:11px;margin-top:6px;line-height:1.6">微信接单记便利贴→丢了单→客户跑了</p>
+436|436|        <div style="font-size:11px;color:var(--accent2);margin-top:6px">说句话→手机订单工具→不再丢单</div>
+437|437|        <div style="font-size:10px;color:var(--text2);margin-top:4px">"早知道就好了"</div>
+438|438|      </div>
+439|439|      <div class="card" style="padding:14px;border-left:3px solid var(--accent)">
+440|440|        <div style="font-size:11px;color:var(--accent);font-weight:600">📊 贸易公司 · 王姐</div>
+441|441|        <p style="font-size:11px;margin-top:6px;line-height:1.6">销售各管各的Excel→离职带走客户→管理黑洞</p>
+442|442|        <div style="font-size:11px;color:var(--accent2);margin-top:6px">说句话→CRM→团队数据一目了然</div>
+443|443|        <div style="font-size:10px;color:var(--text2);margin-top:4px">"早三年能多赚一倍"</div>
+444|444|      </div>
+445|445|      <div class="card" style="padding:14px;border-left:3px solid var(--accent3)">
+446|446|        <div style="font-size:11px;color:var(--accent3);font-weight:600">🏗️ 起重机厂 · 张总</div>
+447|447|        <p style="font-size:11px;margin-top:6px;line-height:1.6">报价2小时/次→接单算不过来→错失生意</p>
+448|448|        <div style="font-size:11px;color:var(--accent2);margin-top:6px">说句话→报价30分钟→接单量+30%</div>
+449|449|        <div style="font-size:10px;color:var(--text2);margin-top:4px">"老李终于不用整天算了"</div>
+450|450|      </div>
+451|451|    </div>
+452|452|    <div style="margin-top:14px;background:rgba(108,92,231,.06);border:1px solid rgba(108,92,231,.12);border-radius:10px;padding:12px 18px;text-align:center">
+453|453|      <span style="font-size:12px;color:var(--text2)">💡 瞬搭不适合：复杂审批流 / 大型电商 / 金融级系统。适合的是：<strong style="color:#fff;">你工作中"要是有个小工具就好了"的想法，30秒变现实</strong></span>
+454|454|    </div>
+455|455|  </div>
+456|456|</div>
+457|457|
+458|458|<!-- 14/15 案例 -->
+459|459|<div class="slide" data-slide="13">
+460|460|  <div class="slide-content">
+461|461|    <div class="tagline" style="background:rgba(0,206,201,.12);border-color:rgba(0,206,201,.25);color:var(--accent2)">🤝 客户视角</div>
+462|462|    <h2>真实案例：<span class="hl">起重机报价系统</span></h2>
+463|463|    <div class="divider"></div>
+464|464|    <div class="case-box">
+465|465|      <div style="font-size:13px;color:var(--accent3);font-weight:600">🏆 已落地的验证</div>
+466|466|      <div style="margin-top:10px;font-size:14px;color:var(--text2);line-height:1.8">
+467|467|        <strong style="color:#fff">客户：</strong>一家起重机生产制造企业<br>
+468|468|        <strong style="color:#fff">痛点：</strong>每次报价需工程师人工查参数、手工计算，耗时<strong style="color:var(--accent3)">数小时</strong><br>
+469|469|        <strong style="color:#fff">方案：</strong>配件库数字化 → AI智能匹配 → 自动生成报价+申报报告<br>
+470|470|        <strong style="color:#fff">结果：</strong><strong style="color:var(--accent2);font-size:18px">数小时 → 30分钟</strong>
+471|471|      </div>
+472|472|      <div class="case-flow">
+473|473|        <span>📦 配件库</span><span class="ar">→</span><span>🧠 AI推理</span><span class="ar">→</span><span>📄 报价/报告</span>
+474|474|      </div>
+475|475|    </div>
+476|476|    <div class="card-grid" style="grid-template-columns:repeat(3,1fr);margin-top:14px">
+477|477|      <div class="card" style="padding:14px;text-align:center"><div style="font-size:13px;color:var(--accent2);font-weight:700">✓ 真实客户</div><p style="font-size:11px">非Demo，真实业务已跑通</p></div>
+478|478|      <div class="card" style="padding:14px;text-align:center"><div style="font-size:13px;color:var(--accent);font-weight:700">✓ 持续使用</div><p style="font-size:11px">不是一次性，真正在生产中用</p></div>
+479|479|      <div class="card" style="padding:14px;text-align:center"><div style="font-size:13px;color:var(--orange);font-weight:700">✓ 可复制</div><p style="font-size:11px">同类制造企业可直接复用</p></div>
+480|480|    </div>
+481|481|  </div>
+482|482|</div>
+483|483|
+484|484|<!-- 14 / 15 END -->
+485|485|<div class="slide" data-slide="14">
+486|486|  <div class="slide-content center-content">
+487|487|    <div class="tagline">🌐 立即体验</div>
+488|488|    <h1 style="font-size:clamp(32px,4vw,52px)">从想法到产品</h1>
+489|489|    <h1 style="font-size:clamp(32px,4vw,52px);margin-top:-4px">只需 <span style="background:linear-gradient(135deg,var(--accent2),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">一句话</span></h1>
+490|490|    <p class="subtitle">「瞬搭」· 让每个人都能创造自己的软件工具</p>
+491|491|    <div style="margin-top:30px;display:flex;gap:14px;flex-wrap:wrap;justify-content:center">
+492|492|      <a href="https://ai-tau-jet-97.vercel.app/" target="_blank" style="display:inline-block;background:linear-gradient(135deg,var(--accent),#8b7cf7);color:#fff;padding:12px 32px;border-radius:40px;text-decoration:none;font-size:15px;font-weight:600;box-shadow:0 6px 25px rgba(108,92,231,.3)">🚀 体验平台</a>
+493|493|      <a href="https://sabina86589089.github.io/ai-platform-ppt/" target="_blank" style="display:inline-block;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:#fff;padding:12px 32px;border-radius:40px;text-decoration:none;font-size:15px;font-weight:500">📖 查看方案</a>
+494|494|    </div>
+495|495|    <div style="margin-top:40px;border-top:1px solid rgba(255,255,255,.05);padding-top:18px;width:100%;max-width:400px">
+496|496|      <p style="font-size:12px;color:var(--text2);text-align:center">
+497|497|        🤖 由 Hermes Agent 根据娜娜的商业思维迭代生成<br>
+498|498|        <span style="font-size:10px">V2.1 · 2026年6月 · 娜娜 × Hermes 联合出品</span>
+499|499|      </p>
+500|500|    </div>
+501|501|  </div>
+502|502|</div>
+503|503|
+504|504|</div>
+505|505|
+506|506|<div class="nav">
+507|507|  <button class="nav-btn" id="prevBtn">◀</button>
+508|508|  <div class="nav-dots" id="dots"></div>
+509|509|  <span class="nav-page" id="pageNum">1 / 15</span>
+510|510|  <button class="nav-btn" id="nextBtn">▶</button>
+511|511|</div>
+512|512|
+513|513|<script>
+514|514|(function(){
+515|515|  const s=document.querySelectorAll('.slide'),t=s.length;let c=0;
+516|516|  function g(i){if(i<0||i>=t)return;s.forEach(x=>x.classList.remove('active'));s[i].classList.add('active');c=i;u();s[i].scrollTop=0}
+517|517|  function u(){document.querySelectorAll('.nav-dot').forEach((d,i)=>d.classList.toggle('active',i===c));document.getElementById('pageNum').textContent=c+1+' / '+t}
+518|518|  const dc=document.getElementById('dots');
+519|519|  for(let i=0;i<t;i++){const d=document.createElement('div');d.className='nav-dot'+(i===0?' active':'');d.addEventListener('click',()=>g(i));dc.appendChild(d)}
+520|520|  document.getElementById('prevBtn').addEventListener('click',()=>g(c-1));
+521|521|  document.getElementById('nextBtn').addEventListener('click',()=>g(c+1));
+522|522|  document.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key==='ArrowDown'||e.key===' '){e.preventDefault();g(c+1)}else if(e.key==='ArrowLeft'||e.key==='ArrowUp'){e.preventDefault();g(c-1)}else if(e.key==='Home'){e.preventDefault();g(0)}else if(e.key==='End'){e.preventDefault();g(t-1)}});
+523|523|  let tx=0;document.addEventListener('touchstart',e=>{tx=e.changedTouches[0].screenX});document.addEventListener('touchend',e=>{const d=tx-e.changedTouches[0].screenX;if(Math.abs(d)>50){d>0?g(c+1):g(c-1)}});
+524|524|})();
+525|525|</script>
+526|526|</body>
+527|527|</html>
+528|528|
