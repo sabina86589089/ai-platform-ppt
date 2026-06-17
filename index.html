@@ -3,531 +3,226 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>瞬搭 · AI快速生成平台 — 商业计划书</title>
+<title>瞬搭 · 一句话一个系统 — 项目方案</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap');
   *{margin:0;padding:0;box-sizing:border-box}
-  :root{--bg:#060613;--surface:#0c0c24;--surface2:#16163a;--accent:#6c5ce7;--accent2:#00cec9;--accent3:#fd79a8;--orange:#fdcb6e;--text:#e8e8f0;--text2:#8888aa;--glow:rgba(108,92,231,0.25)}
-  body{font-family:'Noto Sans SC',-apple-system,sans-serif;background:var(--bg);color:var(--text);overflow:hidden;height:100vh;width:100vw}
-  .slides{height:100vh;width:100vw;position:relative}
-  .slide{position:absolute;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:50px 70px;opacity:0;transform:scale(.95);transition:opacity .5s ease,transform .5s ease;pointer-events:none;overflow-y:auto}
-  .slide.active{opacity:1;transform:scale(1);pointer-events:auto;z-index:10}
-  .grid-bg{position:fixed;top:0;left:0;width:100%;height:100%;background-image:linear-gradient(rgba(108,92,231,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(108,92,231,.03) 1px,transparent 1px);background-size:50px 50px;pointer-events:none;z-index:0}
-  .glow-orb{position:fixed;border-radius:50%;pointer-events:none;z-index:0;filter:blur(80px);opacity:.2}
-  .glow-orb:nth-child(1){width:400px;height:400px;background:var(--accent);top:-100px;right:-100px}
-  .glow-orb:nth-child(2){width:300px;height:300px;background:var(--accent2);bottom:-50px;left:-50px}
-  .glow-orb:nth-child(3){width:250px;height:250px;background:var(--accent3);top:50%;left:50%;transform:translate(-50%,-50%)}
-  .nav{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:12px;z-index:100;background:rgba(12,12,36,.85);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.08);border-radius:40px;padding:8px 20px}
-  .nav-btn{background:none;border:1px solid rgba(255,255,255,.12);color:var(--text2);width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;transition:all .3s}
-  .nav-btn:hover{border-color:var(--accent);color:var(--text)}
-  .nav-dots{display:flex;gap:5px;margin:0 6px}
-  .nav-dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.12);cursor:pointer;transition:all .3s}
-  .nav-dot.active{background:var(--accent);box-shadow:0 0 10px var(--glow);width:20px;border-radius:3px}
-  .nav-page{color:var(--text2);font-size:12px;font-weight:500;min-width:40px;text-align:center}
-  .slide-content{max-width:1100px;width:100%;position:relative;z-index:1}
-  .center-content{display:flex;flex-direction:column;align-items:center;text-align:center}
-  h1{font-size:clamp(36px,4.5vw,64px);font-weight:900;background:linear-gradient(135deg,#fff 0%,#6c5ce7 40%,#00cec9 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1.2}
-  h2{font-size:clamp(24px,3vw,40px);font-weight:700;color:#fff;margin-bottom:12px;line-height:1.3}
-  h2 .hl{background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-  h3{font-size:18px;font-weight:600;color:#fff;margin-bottom:6px}
-  p,.body-text{font-size:15px;line-height:1.7;color:var(--text2);font-weight:300}
-  .tagline{display:inline-block;background:rgba(108,92,231,.12);border:1px solid rgba(108,92,231,.25);color:var(--accent);padding:5px 16px;border-radius:20px;font-size:12px;font-weight:500;margin-bottom:12px}
-  .subtitle{font-size:16px;color:var(--text2);font-weight:300;margin-top:8px}
-  .divider{width:50px;height:3px;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:2px;margin:12px 0 20px}
-  .card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px;margin-top:20px}
-  .card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:20px;transition:all .3s}
-  .card:hover{border-color:rgba(108,92,231,.3);transform:translateY(-3px);box-shadow:0 10px 30px rgba(108,92,231,.08)}
-  .card .icon{font-size:28px;margin-bottom:8px;display:block}
-  .card h4{font-size:15px;font-weight:600;color:#fff;margin-bottom:4px}
-  .card p{font-size:13px;color:var(--text2);line-height:1.6}
-  .card .big{font-size:32px;font-weight:900;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:2px}
-  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:16px}
-  .arch-flow{display:flex;align-items:center;justify-content:center;gap:10px;margin:24px 0;flex-wrap:wrap}
-  .arch-box{background:rgba(255,255,255,.03);border:1px solid rgba(108,92,231,.2);border-radius:12px;padding:14px 18px;text-align:center;flex:1;min-width:120px}
-  .arch-box .lbl{font-size:13px;font-weight:600;color:#fff}
-  .arch-box .dsc{font-size:11px;color:var(--text2);margin-top:2px}
-  .arch-arrow{color:var(--accent);font-size:18px;opacity:.5}
-  .badge{display:inline-block;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:6px;padding:4px 12px;font-size:12px;color:var(--text2);margin:2px}
-  .badge.ai{border-color:rgba(108,92,231,.3);color:var(--accent)}
-  .badge.gr{border-color:rgba(0,206,201,.3);color:var(--accent2)}
-  .badge.red{border-color:rgba(253,121,168,.3);color:var(--accent3)}
-  .badge.yl{border-color:rgba(253,203,110,.3);color:var(--orange)}
-  .pricing{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:16px}
-  .pcard{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:16px;text-align:center}
-  .pcard.feat{border-color:var(--accent);background:rgba(108,92,231,.06);transform:scale(1.04)}
-  .pcard .pn{font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.5px}
-  .pcard .pr{font-size:24px;font-weight:900;color:#fff;margin:6px 0}
-  .pcard .pr span{font-size:13px;font-weight:400;color:var(--text2)}
-  .pcard .pf{font-size:12px;color:var(--text2);line-height:2}
-  .tl{display:flex;gap:0;margin:24px 0;position:relative}
-  .tl::before{content:'';position:absolute;top:24px;left:30px;right:30px;height:2px;background:linear-gradient(90deg,var(--accent),var(--accent2),var(--accent3),var(--orange));opacity:.25}
-  .tli{flex:1;text-align:center;position:relative;padding:0 8px}
-  .tli .dot{width:14px;height:14px;border-radius:50%;margin:0 auto 10px;position:relative;z-index:2}
-  .tli:nth-child(1) .dot{background:var(--accent);box-shadow:0 0 16px var(--glow)}
-  .tli:nth-child(2) .dot{background:var(--accent2)}
-  .tli:nth-child(3) .dot{background:var(--accent3)}
-  .tli:nth-child(4) .dot{background:var(--orange)}
-  .tli .ph{font-size:13px;font-weight:700;color:#fff;margin-bottom:2px}
-  .tli .dd{font-size:11px;color:var(--text2);line-height:1.5}
-  .tli .st{font-size:10px;display:inline-block;padding:2px 8px;border-radius:8px;margin-top:4px}
-  .tli:nth-child(1) .st{background:rgba(0,206,201,.12);color:var(--accent2)}
-  .tli:nth-child(2) .st{background:rgba(108,92,231,.12);color:var(--accent)}
-  .tli:nth-child(3) .st,.tli:nth-child(4) .st{background:rgba(255,255,255,.05);color:var(--text2)}
-  table{width:100%;border-collapse:separate;border-spacing:0;margin-top:14px;border-radius:10px;overflow:hidden;font-size:13px}
-  th{background:rgba(108,92,231,.12);color:var(--text);font-weight:600;padding:10px 14px;text-align:left;border-bottom:1px solid rgba(255,255,255,.04)}
-  td{padding:9px 14px;color:var(--text2);border-bottom:1px solid rgba(255,255,255,.03)}
-  tr:hover td{background:rgba(255,255,255,.02)}
-  .hcell{color:var(--accent2);font-weight:500}
-  .kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px}
-  .kpi{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px;text-align:center}
-  .kpi .kv{font-size:22px;font-weight:900;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-  .kpi .kl{font-size:11px;color:var(--text2);margin-top:2px}
-  .case-box{background:linear-gradient(135deg,rgba(108,92,231,.06),rgba(0,206,201,.06));border:1px solid rgba(108,92,231,.15);border-radius:16px;padding:24px;margin-top:16px}
-  .case-flow{display:flex;align-items:center;gap:6px;margin-top:12px;flex-wrap:wrap}
-  .case-flow span{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:6px;padding:6px 12px;font-size:12px;color:var(--text)}
-  .case-flow .ar{border:none;background:none;color:var(--accent);font-size:16px;padding:0}
-  .audience-badge{padding:6px 16px;border-radius:20px;font-size:12px;font-weight:600;display:inline-block}
-  .audience-badge.inv{background:rgba(253,203,110,.12);color:var(--orange);border:1px solid rgba(253,203,110,.2)}
-  .audience-badge.exc{background:rgba(108,92,231,.12);color:var(--accent);border:1px solid rgba(108,92,231,.2)}
-  .audience-badge.cli{background:rgba(0,206,201,.12);color:var(--accent2);border:1px solid rgba(0,206,201,.2)}
-  .risk-table td:first-child{font-weight:500;color:#fff}
-  .risk-table .h{background:rgba(253,121,168,.15);color:var(--accent3)}
-  .risk-table .m{background:rgba(253,203,110,.1);color:var(--orange)}
-  .risk-table .l{background:rgba(0,206,201,.1);color:var(--accent2)}
-  ::-webkit-scrollbar{width:3px}
-  ::-webkit-scrollbar-track{background:transparent}
-  ::-webkit-scrollbar-thumb{background:rgba(108,92,231,.25);border-radius:2px}
-  @media(max-width:768px){
-    .slide{padding:24px 18px}
-    .card-grid{grid-template-columns:1fr 1fr}
-    .two-col{grid-template-columns:1fr}
-    .pricing{grid-template-columns:1fr 1fr}
-    .arch-flow{flex-direction:column;gap:4px}
-    .arch-arrow{transform:rotate(90deg)}
-    .tl{flex-direction:column;gap:12px}
-    .tl::before{display:none}
-    .kpi-grid{grid-template-columns:1fr 1fr}
-  }
+  body{font-family:'Noto Sans SC',-apple-system,sans-serif;background:#f8f9fb;color:#1a1a2e;line-height:1.7}
+  .container{max-width:900px;margin:0 auto;padding:40px 24px}
+  .header{text-align:center;margin-bottom:48px}
+  .logo{font-size:13px;color:#6c5ce7;font-weight:600;letter-spacing:2px;margin-bottom:8px}
+  h1{font-size:42px;font-weight:900;background:linear-gradient(135deg,#1a1a2e,#6c5ce7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:8px}
+  .subtitle{font-size:18px;color:#666;font-weight:300}
+  .divider{width:60px;height:3px;background:linear-gradient(90deg,#6c5ce7,#00cec9);border-radius:2px;margin:24px auto}
+  .tag{display:inline-block;background:#f0edff;color:#6c5ce7;padding:4px 14px;border-radius:20px;font-size:12px;font-weight:500;margin:2px}
+  .section{margin-bottom:40px}
+  .section h2{font-size:22px;font-weight:700;color:#1a1a2e;margin-bottom:16px;display:flex;align-items:center;gap:10px}
+  .section h2 .num{background:#6c5ce7;color:#fff;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0}
+  .card{background:#fff;border:1px solid #eee;border-radius:16px;padding:24px;margin-bottom:16px}
+  .card p{color:#444;font-size:15px;line-height:1.8}
+  .card p strong{color:#1a1a2e}
+  .card .highlight{color:#6c5ce7;font-weight:600}
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .screenshot-wrap{background:#fff;border:1px solid #eee;border-radius:16px;overflow:hidden;margin:16px 0}
+  .screenshot-wrap img{width:100%;display:block;border-bottom:1px solid #eee}
+  .screenshot-wrap .caption{padding:12px 20px;font-size:13px;color:#888;background:#fafafa}
+  .screenshot-wrap .caption strong{color:#333}
+  .pill{display:inline-block;padding:3px 10px;border-radius:12px;font-size:12px;font-weight:500;margin:1px}
+  .pill.green{background:#e8f8f5;color:#00b894}
+  .pill.yellow{background:#fff8e1;color:#f0932b}
+  .pill.red{background:#ffe8e8;color:#e74c3c}
+  .pill.purple{background:#f0edff;color:#6c5ce7}
+  table{width:100%;border-collapse:collapse;font-size:14px;margin:12px 0}
+  th{background:#f5f5f9;color:#1a1a2e;font-weight:600;padding:10px 14px;text-align:left;border-bottom:2px solid #eee}
+  td{padding:10px 14px;border-bottom:1px solid #f0f0f0;color:#555}
+  .qa-card{background:#fafbff;border:1px solid #e8e8f0;border-radius:12px;padding:18px 20px;margin-bottom:12px}
+  .qa-card .q{font-weight:600;color:#1a1a2e;font-size:14px;margin-bottom:6px}
+  .qa-card .a{color:#666;font-size:14px;line-height:1.7}
+  .footer{text-align:center;padding:32px 0 16px;border-top:1px solid #eee;color:#999;font-size:13px}
+  .btn{display:inline-block;background:linear-gradient(135deg,#6c5ce7,#8b7cf7);color:#fff;padding:12px 32px;border-radius:40px;text-decoration:none;font-size:15px;font-weight:600;box-shadow:0 4px 15px rgba(108,92,231,.3)}
+  .btn-outline{display:inline-block;background:#fff;border:1px solid #6c5ce7;color:#6c5ce7;padding:12px 32px;border-radius:40px;text-decoration:none;font-size:15px;font-weight:500}
+  .cta{text-align:center;margin:32px 0}
+  @media(max-width:700px){.two-col{grid-template-columns:1fr}.container{padding:24px 16px}h1{font-size:30px}}
 </style>
 </head>
 <body>
-<div class="grid-bg"></div>
-<div class="glow-orb"></div>
-<div class="glow-orb"></div>
-<div class="glow-orb" style="opacity:.1"></div>
+<div class="container">
 
-<div class="slides">
+<div class="header">
+  <div class="logo">瞬搭 · AI SOFTWARE PRODUCTION LINE</div>
+  <h1>一句话，一个系统</h1>
+  <p class="subtitle">让没有IT团队的中小企业，30秒用上数字化管理工具</p>
+  <div class="divider"></div>
+  <div>
+    <span class="tag">🏭 首个深耕制造业</span>
+    <span class="tag">⚡ 已有案例验证</span>
+    <span class="tag">🎯 ¥999/年起</span>
+    <span class="tag">🤖 AI驱动</span>
+  </div>
+</div>
 
-<!-- 1/14 COVER -->
-<div class="slide" data-slide="0">
-  <div class="slide-content center-content">
-    <div class="tagline">🚀 AI软件生产线 · 首个深耕制造业</div>
-    <h1 class="glow-text" style="font-size:clamp(40px,5vw,72px)">「瞬搭」</h1>
-    <p style="font-size:18px;color:var(--accent2);font-weight:400;margin-top:-4px">AI软件生产线</p>
-    <p class="subtitle">客户的需求进去，可用的系统出来</p>
-    <div style="margin-top:24px;display:flex;gap:10px;flex-wrap:wrap;justify-content:center">
-      <span class="badge ai">🏭 深耕制造业</span>
-      <span class="badge gr">⚡ 需求→系统一站式</span>
-      <span class="badge red">🎯 零IT门槛</span>
-      <span class="badge yl">📈 可扩展零售/贸易/服务</span>
-    </div>
-    <div style="margin-top:40px;border-top:1px solid rgba(255,255,255,.05);padding-top:18px;width:100%;max-width:450px;display:flex;justify-content:space-between">
-      <span style="color:var(--text2);font-size:12px">📅 2026.06</span>
-      <span style="color:var(--accent2);font-size:12px">👤 娜娜 · 创始人/产品经理</span>
+<!-- 1. 问题 -->
+<div class="section">
+  <h2><span class="num">1</span> 问题</h2>
+  <div class="card">
+    <p><strong>5200万中国中小企业，80%没有数字化工具。</strong></p>
+    <p style="margin-top:8px">不是不需要——是现有方案都不对：买SaaS太贵（CRM ¥3000+/年），找外包太慢（排期3个月起），自己用Excel太弱（数据丢、没法共享）。</p>
+    <p style="margin-top:8px">他们想管的其实很简单：<strong>客户、订单、库存、报价</strong>——一张Excel能装下的数据量，却找不到一个合适又便宜的方案。</p>
+  </div>
+</div>
+
+<!-- 2. 方案 -->
+<div class="section">
+  <h2><span class="num">2</span> 方案</h2>
+  <div class="card">
+    <p><strong>瞬搭是一个AI软件生产线。</strong>客户说一句需求，30秒得到可用的在线工具。不用装软件、不用写代码、不用买服务器。</p>
+  </div>
+
+  <div class="screenshot-wrap">
+    <img src="screenshot-demo.png" alt="瞬搭生成截图">
+    <div class="caption">
+      <strong>30秒生成效果</strong> · 用户输入"帮我做一个客户登记工具，有姓名、电话、公司名称" → AI自动解析需求、匹配字段、生成带表单+数据看板的完整页面
     </div>
   </div>
 </div>
 
-<!-- 2/14 三层受众 -->
-<div class="slide" data-slide="1">
-  <div class="slide-content center-content">
-    <div class="tagline">📖 阅读指南</div>
-    <h2>给 <span class="hl">三种人</span> 看的方案</h2>
-    <div class="divider" style="margin:12px auto 24px"></div>
-    <div class="two-col" style="max-width:800px;gap:16px">
-      <div class="card" style="border-left:3px solid var(--orange)">
-        <span class="audience-badge inv">🏦 投资人</span>
-        <p style="margin-top:12px;font-size:13px">市场多大？凭什么赢？<br>谁在做？钱怎么赚？多久回本？</p>
-        <div style="margin-top:8px;font-size:11px;color:var(--orange)">→ 看第4-8页</div>
-      </div>
-      <div class="card" style="border-left:3px solid var(--accent)">
-        <span class="audience-badge exc">🛠️ 执行方</span>
-        <p style="margin-top:12px;font-size:13px">怎么建？多久？<br>有什么坑？怎么衡量成功？</p>
-        <div style="margin-top:8px;font-size:11px;color:var(--accent)">→ 看第9-12页</div>
-      </div>
+<!-- 3. 为什么是现在 -->
+<div class="section">
+  <h2><span class="num">3</span> 时机</h2>
+  <div class="two-col">
+    <div class="card" style="padding:16px">
+      <div style="font-size:28px;font-weight:900;color:#6c5ce7">$290亿</div>
+      <div style="font-size:13px;color:#888">全球低代码市场规模 (2025)</div>
     </div>
-    <div class="card" style="max-width:400px;border-left:3px solid var(--accent2);margin-top:0">
-      <span class="audience-badge cli">🤝 目标客户</span>
-      <p style="margin-top:12px;font-size:13px">能解决我什么问题？多少钱？怎么用？</p>
-      <div style="margin-top:8px;font-size:11px;color:var(--accent2)">→ 看第13-15页</div>
+    <div class="card" style="padding:16px">
+      <div style="font-size:28px;font-weight:900;color:#00cec9">20-25%</div>
+      <div style="font-size:13px;color:#888">年复合增长率 (CAGR)</div>
+    </div>
+  </div>
+  <div class="card" style="padding:16px;font-size:13px;color:#666;line-height:2">
+    <strong style="color:#1a1a2e">时间线</strong><br>
+    2023前：低代码门槛高，拖拽操作学不会<br>
+    2024：AI代码生成能力突破，市场开始教育<br>
+    2025：Bolt.new/Lovable 验证了"自然语言→应用"的需求<br>
+    <strong style="color:#6c5ce7">2026：市场教育完成，产品窗口还在——现在入局正是时候</strong>
+  </div>
+</div>
+
+<!-- 4. 差异化 -->
+<div class="section">
+  <h2><span class="num">4</span> 凭什么</h2>
+  <table>
+    <tr><th style="width:22%">比我们</th><th>我们的回答</th></tr>
+    <tr><td><strong>秒哒</strong>（百度）</td><td>他们还是低代码思路，要选模板配组件。我们纯说话就行，零学习成本</td></tr>
+    <tr><td><strong>Codex</strong>（OpenAI）</td><td>他们给会跟AI协作的人用。我们给"只要结果"的人用</td></tr>
+    <tr><td><strong>钉钉宜搭</strong></td><td>¥300+/月还要学平台。我们¥999/年，说句话就用</td></tr>
+    <tr><td><strong>传统外包</strong></td><td>¥5万起、3个月。我们30秒出原型、今天就用上</td></tr>
+  </table>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px">
+    <div class="card" style="padding:14px;text-align:center">
+      <div style="font-size:14px;font-weight:700;color:#6c5ce7">数据飞轮</div>
+      <div style="font-size:12px;color:#888;margin-top:4px">用越多→模板越准</div>
+    </div>
+    <div class="card" style="padding:14px;text-align:center">
+      <div style="font-size:14px;font-weight:700;color:#00cec9">切换成本</div>
+      <div style="font-size:12px;color:#888;margin-top:4px">数据在平台上，走了带不走</div>
     </div>
   </div>
 </div>
 
-<!-- 3/15 产品到底是什么 -->
-<div class="slide" data-slide="2">
-  <div class="slide-content">
-    <div class="tagline">🧭 先把这事说清楚</div>
-    <h2>这产品到底是 <span class="hl">个啥</span>？</h2>
-    <div class="divider"></div>
-    <div class="center-content">
-      <div style="background:rgba(108,92,231,.06);border:1px solid rgba(108,92,231,.15);border-radius:14px;padding:20px 28px;max-width:700px">
-        <p style="font-size:18px;color:#fff;font-weight:600">一条AI软件生产线</p>
-        <p style="font-size:14px;color:var(--text2);margin-top:6px">客户的需求进去，可用的系统出来</p>
-        <p style="font-size:12px;color:var(--text2);margin-top:2px">不是"生成一个页面"，是需求→分析→组装→验证→交付的完整流水线</p>
-      </div>
+<!-- 5. 真实案例 -->
+<div class="section">
+  <h2><span class="num">5</span> 案例</h2>
+  <div class="card" style="border-left:4px solid #6c5ce7">
+    <p><strong>🏗️ 起重机生产制造企业 · 报价系统</strong></p>
+    <p style="margin-top:8px;font-size:14px"><strong>之前：</strong>工程师查参数手册手工计算，每次报价1.5-2小时</p>
+    <p style="font-size:14px"><strong>之后：</strong>输入参数→AI自动匹配配件→30分钟出报价</p>
+    <p style="font-size:14px;color:#6c5ce7;font-weight:600;margin-top:6px">效率提升75% · 接单量提升30%</p>
+  </div>
+</div>
+
+<!-- 6. 定价 -->
+<div class="section">
+  <h2><span class="num">6</span> 定价</h2>
+  <div class="two-col">
+    <div class="card" style="padding:16px;text-align:center">
+      <div style="font-size:12px;color:#888;font-weight:600;text-transform:uppercase">免费版</div>
+      <div style="font-size:28px;font-weight:900;color:#1a1a2e">¥0</div>
+      <div style="font-size:13px;color:#888;margin-top:4px">先试试</div>
     </div>
-    <div class="two-col" style="gap:12px;margin-top:14px">
-      <div style="background:rgba(108,92,231,.06);border:1px solid rgba(108,92,231,.15);border-radius:10px;padding:14px">
-        <div style="font-size:12px;color:var(--accent);font-weight:600;margin-bottom:6px">V1-V3 我怎么说</div>
-        <p style="font-size:12px;color:var(--text2)">"一个在线工具生成器，说句话生成工具"</p>
-        <p style="font-size:11px;color:var(--accent3);margin-top:4px">❌ 太轻了，看不出深度</p>
-      </div>
-      <div style="background:rgba(0,206,201,.06);border:1px solid rgba(0,206,201,.15);border-radius:10px;padding:14px">
-        <div style="font-size:12px;color:var(--accent2);font-weight:600;margin-bottom:6px">✅ V4 正确理解</div>
-        <p style="font-size:12px;color:var(--text2)">"AI软件生产线——聚焦制造业，从需求到系统结构化交付"</p>
-      </div>
+    <div class="card" style="padding:16px;text-align:center;border-color:#6c5ce7;background:#f8f6ff">
+      <div style="font-size:12px;color:#6c5ce7;font-weight:600;text-transform:uppercase">⭐ 推荐</div>
+      <div style="font-size:28px;font-weight:900;color:#6c5ce7">¥999<span style="font-size:14px;color:#888;font-weight:400">/年</span></div>
+      <div style="font-size:13px;color:#888;margin-top:4px">小企业管理工具</div>
     </div>
-    <div style="display:flex;gap:10px;margin-top:14px;justify-content:center;flex-wrap:wrap">
-      <div class="card" style="padding:12px;max-width:220px;text-align:center;border-left:3px solid var(--accent)">
-        <div style="font-size:11px;color:var(--accent);font-weight:600">👤 客户（付钱）</div>
-        <p style="font-size:11px;margin-top:4px">制造业中小企业老板<br>生产/销售总监</p>
-      </div>
-      <div class="card" style="padding:12px;max-width:220px;text-align:center;border-left:3px solid var(--accent2)">
-        <div style="font-size:11px;color:var(--accent2);font-weight:600">👤 用户（用）</div>
-        <p style="font-size:11px;margin-top:4px">销售/跟单员/仓管/质检员<br>手机或PC操作</p>
-      </div>
+  </div>
+  <div class="two-col" style="margin-top:0">
+    <div class="card" style="padding:16px;text-align:center">
+      <div style="font-size:12px;color:#888;font-weight:600;text-transform:uppercase">企业版</div>
+      <div style="font-size:28px;font-weight:900;color:#1a1a2e">¥4,999<span style="font-size:14px;color:#888;font-weight:400">/年</span></div>
+      <div style="font-size:13px;color:#888;margin-top:4px">团队协作+数据安全</div>
     </div>
-    <div style="margin-top:10px;background:rgba(108,92,231,.06);border-radius:8px;padding:8px 16px;text-align:center">
-      <span style="font-size:11px;color:var(--text2)">和秒哒/Codex/Claude Code的区别？</span><span style="font-size:11px;color:var(--accent2)"> 它们给"会折腾的人"用，瞬搭给"只要结果"的企业用，且聚焦制造业</span>
+    <div class="card" style="padding:16px;text-align:center">
+      <div style="font-size:12px;color:#888;font-weight:600;text-transform:uppercase">私有部署</div>
+      <div style="font-size:28px;font-weight:900;color:#1a1a2e">¥50,000<span style="font-size:14px;color:#888;font-weight:400">起</span></div>
+      <div style="font-size:13px;color:#888;margin-top:4px">大企业数据不出域</div>
     </div>
   </div>
 </div>
 
-<!-- 4/15 WHY NOW -->
-<div class="slide" data-slide="3">
-  <div class="slide-content">
-    <div class="tagline" style="background:rgba(253,203,110,.12);border-color:rgba(253,203,110,.25);color:var(--orange)">🏦 投资视角</div>
-    <h2>为什么是 <span class="hl">现在</span>？</h2>
-    <div class="divider"></div>
-    <div class="kpi-grid">
-      <div class="kpi"><div class="kv">$290亿</div><div class="kl">全球低代码市场</div></div>
-      <div class="kpi" style="border-color:rgba(0,206,201,.12)"><div class="kv" style="background:linear-gradient(135deg,var(--accent2),var(--accent));-webkit-background-clip:text">20-25%</div><div class="kl">年复合增长率</div></div>
-      <div class="kpi"><div class="kv">5200万+</div><div class="kl">中国中小企业</div></div>
-      <div class="kpi" style="border-color:rgba(253,121,168,.12)"><div class="kv" style="background:linear-gradient(135deg,var(--accent3),var(--orange));-webkit-background-clip:text">80%</div><div class="kl">没有数字化工具</div></div>
-    </div>
-    <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:18px 22px;margin-top:18px">
-      <div style="font-size:13px;color:var(--text2);line-height:2;font-family:monospace">
-        2023前：低代码门槛高，拖拽式操作仍有学习成本<br>
-        2024&nbsp;&nbsp;：AI代码生成能力突破，但工具面向开发者<br>
-        2025&nbsp;&nbsp;：Bolt.new/Lovable 验证了自然语言→应用的市场<br>
-        2026&nbsp;&nbsp;：<span style="color:var(--accent2);font-weight:700">市场教育完成，产品仍处早期——窗口期还在</span><br>
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↑<span style="color:var(--accent);font-weight:700"> 瞬搭在这里</span>
-      </div>
-    </div>
+<!-- 7. 团队 -->
+<div class="section">
+  <h2><span class="num">7</span> 团队</h2>
+  <div class="card">
+    <p><strong>1人 + AI × 2。</strong> 月人力成本¥1,000 vs 传统团队¥15-30万。</p>
+    <p style="margin-top:6px;font-size:14px;color:#666">创始人娜娜是产品经理，不会写代码但对AI驱动的产品化有成熟方法论。使用Hermes Agent（规划/管理/验收）和Codex（编码执行）作为核心执行力。</p>
   </div>
 </div>
 
-<!-- 4/14 WHY US -->
-<div class="slide" data-slide="4">
-  <div class="slide-content">
-    <div class="tagline" style="background:rgba(253,203,110,.12);border-color:rgba(253,203,110,.25);color:var(--orange)">🏦 投资视角</div>
-    <h2>为什么是 <span class="hl">我们</span>？</h2>
-    <div class="divider"></div>
-    <div class="two-col">
-      <div class="card" style="border-left:3px solid var(--orange)">
-        <span style="font-size:12px;color:var(--orange);font-weight:600">👤 创始人</span>
-        <p style="margin-top:8px;font-size:13px">我是娜娜，一个不会写代码的产品经理。过去几年一直在做一件事：<span style="color:#fff">用AI把商业想法变成可用的产品。</span></p>
-        <p style="margin-top:6px;font-size:13px">从"给自己做个客户管理工具要排期3周"开始，到形成<span style="color:#fff">Hermes(规划)+Codex(执行)</span>的AI流水线，再到把这条流水线产品化为「瞬搭」。</p>
-      </div>
-      <div class="card" style="border-left:3px solid var(--accent2)">
-        <span style="font-size:12px;color:var(--accent2);font-weight:600">🤖 AI团队优势</span>
-        <div style="margin-top:8px">
-          <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:13px"><span style="color:var(--text2)">团队规模</span><span style="color:#fff">1人+AI×2 vs 传统5-8人</span></div>
-          <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:13px"><span style="color:var(--text2)">月人力成本</span><span style="color:var(--accent2)">¥1,000 vs ¥15-30万</span></div>
-          <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:13px"><span style="color:var(--text2)">开发速度</span><span style="color:#fff">按分钟 vs 按天</span></div>
-          <div style="display:flex;justify-content:space-between;padding:6px 0;font-size:13px"><span style="color:var(--text2)">可扩展性</span><span style="color:var(--accent2)">加AI≈零边际成本</span></div>
-        </div>
-      </div>
-    </div>
+<!-- 8. 融资 -->
+<div class="section">
+  <h2><span class="num">8</span> 融资</h2>
+  <div class="card">
+    <p><strong>种子轮 ¥50-80万</strong></p>
+    <p style="margin-top:6px;font-size:14px;color:#666">用于数据持久化、用户系统开发、行业模板建设。目标6个月内月收入¥5万+。</p>
   </div>
 </div>
 
-<!-- 5/14 竞争 -->
-<div class="slide" data-slide="5">
-  <div class="slide-content">
-    <div class="tagline" style="background:rgba(253,203,110,.12);border-color:rgba(253,203,110,.25);color:var(--orange)">🏦 投资视角</div>
-    <h2>凭什么 <span class="hl">赢</span>？</h2>
-    <div class="divider"></div>
-    <table>
-      <tr><th style="width:20%">竞品</th><th style="width:25%">用户是谁</th><th style="width:25%">怎么用</th><th style="width:30%">瞬搭差异</th></tr>
-      <tr><td>秒哒</td><td>想搭应用的人</td><td>选模板→配组件</td><td class="hcell">纯说话，不用学平台</td></tr>
-      <tr><td>Codex</td><td>会跟AI协作的人</td><td>AI写代码→自部署</td><td class="hcell">全自动部署+数据+分享</td></tr>
-      <tr><td>Claude Code</td><td>会用终端的开发者</td><td>终端AI→自部署</td><td class="hcell">零门槛，打开浏览器就行</td></tr>
-      <tr><td>传统外包</td><td>有预算的企业</td><td>需求文档→开发</td><td class="hcell">30秒原型，¥0起步</td></tr>
-    </table>
-    <div class="card-grid" style="grid-template-columns:repeat(4,1fr);margin-top:16px">
-      <div class="card" style="padding:12px;text-align:center"><div style="font-size:13px;font-weight:600;color:var(--accent)">数据飞轮</div><p style="font-size:11px">用越多→越精准</p></div>
-      <div class="card" style="padding:12px;text-align:center"><div style="font-size:13px;font-weight:600;color:var(--accent2)">切换成本</div><p style="font-size:11px">数据沉淀在平台</p></div>
-      <div class="card" style="padding:12px;text-align:center"><div style="font-size:13px;font-weight:600;color:var(--accent3)">AI原生</div><p style="font-size:11px">迭代快一个数量级</p></div>
-      <div class="card" style="padding:12px;text-align:center"><div style="font-size:13px;font-weight:600;color:var(--orange)">先发优势</div><p style="font-size:11px">国内细分空白</p></div>
-    </div>
+<!-- 常见质疑 -->
+<div class="section">
+  <h2><span class="num" style="background:#f0932b">?</span> 常见质疑</h2>
+  
+  <div class="qa-card">
+    <div class="q">AI大模型迭代这么快，你们会不会被取代？</div>
+    <div class="a">如果瞬搭只是一个"AI生成器"，会。但我们做的是<strong>产品闭环</strong>——生成+部署+数据存储+团队共享。模型迭代只会让我们的生成更好更快，但我们的产品闭环不会被模型替代。</div>
+  </div>
+  
+  <div class="qa-card">
+    <div class="q">你们和秒哒/低代码平台有什么区别？</div>
+    <div class="a">低代码平台要用户学平台操作、选组件、配参数。瞬搭是<strong>纯自然语言</strong>——说句话，系统自动完成所有事。用户不需要理解任何平台概念。</div>
+  </div>
+
+  <div class="qa-card">
+    <div class="q">产品成熟度怎么样？什么时候能用？</div>
+    <div class="a">MVP已跑通——输入需求→生成页面→部署上线已验证。现在就能试用：<strong style="color:#6c5ce7">https://ai-tau-jet-97.vercel.app/</strong>。数据持久化和用户系统正在开发中。</div>
+  </div>
+
+  <div class="qa-card">
+    <div class="q">你们的目标客户是谁？</div>
+    <div class="a">首先聚焦<strong>制造业中小企业</strong>（有起重机报价案例验证），后续扩展到零售、贸易、服务等行业。共通点是：20-200人规模、没有IT团队、需要简单管理工具。</div>
   </div>
 </div>
 
-<!-- 6/14 商业模式 -->
-<div class="slide" data-slide="6">
-  <div class="slide-content">
-    <div class="tagline" style="background:rgba(253,203,110,.12);border-color:rgba(253,203,110,.25);color:var(--orange)">🏦 投资视角</div>
-    <h2>怎么 <span class="hl">赚钱</span>？</h2>
-    <div class="divider"></div>
-    <div class="pricing">
-      <div class="pcard"><div class="pn">免费版</div><div class="pr">¥0</div><div class="pf">10次/月<br>3个部署<br>100条数据</div></div>
-      <div class="pcard feat"><div class="pn">⭐ 专业版</div><div class="pr">¥99<span>/月</span></div><div class="pf">100次/月<br>不限部署<br>10万条数据</div></div>
-      <div class="pcard"><div class="pn">企业版</div><div class="pr">¥499<span>/月</span></div><div class="pf">不限次数<br>团队协作<br>私有化可选</div></div>
-      <div class="pcard" style="border-color:rgba(0,206,201,.2)"><div class="pn">🏢 私有部署</div><div class="pr">¥5万<span>起</span></div><div class="pf">企业独立部署<br>定制开发<br>专属支持</div></div>
-    </div>
-    <div class="card" style="margin-top:14px;padding:14px 18px">
-      <div style="display:flex;justify-content:space-between;align-items:center">
-        <div><span style="color:var(--text2);font-size:12px">📈 收入预测（保守）</span></div>
-        <div><span style="color:var(--accent2);font-size:12px">Q1盈亏平衡 → Q4年化¥120万 → 第2年¥600万</span></div>
-      </div>
-      <div style="margin-top:8px;font-size:12px;color:var(--text2)">关键假设：CAC≈¥0（内容引流）· 付费转化率5% · 月流失5% · 月固定成本¥3,000</div>
-    </div>
-  </div>
+<div class="cta">
+  <a href="https://ai-tau-jet-97.vercel.app/" class="btn">🚀 体验平台</a>
+  <a href="https://sabina86589089.github.io/ai-platform-ppt/" class="btn-outline" style="margin-left:12px">📖 完整PPT</a>
 </div>
 
-<!-- 7/14 融资 -->
-<div class="slide" data-slide="7">
-  <div class="slide-content">
-    <div class="tagline" style="background:rgba(253,203,110,.12);border-color:rgba(253,203,110,.25);color:var(--orange)">🏦 投资视角</div>
-    <h2>融资与 <span class="hl">里程碑</span></h2>
-    <div class="divider"></div>
-    <div class="two-col">
-      <div>
-        <h3 style="font-size:16px">资金用途（种子轮 ¥80万）</h3>
-        <div style="margin-top:8px">
-          <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:13px"><span style="color:var(--text2)">产品开发 40%</span><span style="color:var(--accent)">¥32万</span></div>
-          <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:13px"><span style="color:var(--text2)">市场推广 30%</span><span style="color:var(--accent2)">¥24万</span></div>
-          <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:13px"><span style="color:var(--text2)">团队（兼职UI+运营）20%</span><span style="color:var(--accent3)">¥16万</span></div>
-          <div style="display:flex;justify-content:space-between;padding:6px 0;font-size:13px"><span style="color:var(--text2)">运营储备 10%</span><span style="color:var(--orange)">¥8万</span></div>
-        </div>
-      </div>
-      <div>
-        <h3 style="font-size:16px">融资节奏</h3>
-        <div style="margin-top:8px">
-          <div style="background:rgba(108,92,231,.06);border:1px solid rgba(108,92,231,.15);border-radius:8px;padding:10px 14px;margin-bottom:6px">
-            <div style="font-size:12px;color:var(--accent);font-weight:600">种子轮 ¥50-80万 · 当前</div>
-            <div style="font-size:11px;color:var(--text2)">里程碑：MVP验证 + 首个付费客户</div>
-          </div>
-          <div style="background:rgba(0,206,201,.06);border:1px solid rgba(0,206,201,.15);border-radius:8px;padding:10px 14px;margin-bottom:6px">
-            <div style="font-size:12px;color:var(--accent2);font-weight:600">Pre-A ¥300-500万 · 第6个月</div>
-            <div style="font-size:11px;color:var(--text2)">月活5万+，月收入¥5万+</div>
-          </div>
-          <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:8px;padding:10px 14px">
-            <div style="font-size:12px;color:#fff;font-weight:600">A轮 ¥1,000-3,000万 · 第18个月</div>
-            <div style="font-size:11px;color:var(--text2)">年收入¥500万+，团队20人</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- 8/14 产品架构 -->
-<div class="slide" data-slide="8">
-  <div class="slide-content">
-    <div class="tagline" style="background:rgba(108,92,231,.12);border-color:rgba(108,92,231,.25)">🛠️ 执行视角</div>
-    <h2>产品架构：<span class="hl">四层闭环</span></h2>
-    <div class="divider"></div>
-    <div class="arch-flow">
-      <div class="arch-box"><div class="lbl">🗣️ 用户输入</div><div class="dsc">一句话 · 描述 · 截图</div></div>
-      <div class="arch-arrow">→</div>
-      <div class="arch-box"><div class="lbl">🧠 AI推理引擎</div><div class="dsc">需求理解→架构→生成</div></div>
-      <div class="arch-arrow">→</div>
-      <div class="arch-box"><div class="lbl">📦 内容交付</div><div class="dsc">看板·表单·工作台·报表</div></div>
-      <div class="arch-arrow">→</div>
-      <div class="arch-box"><div class="lbl">🚀 部署交付</div><div class="dsc">一键部署 · 在线链接</div></div>
-    </div>
-    <div class="card-grid" style="grid-template-columns:repeat(4,1fr)">
-      <div class="card" style="padding:14px"><h4 style="font-size:14px">✅ 已完成</h4><p style="font-size:12px">需求解析引擎<br>6种字段模板<br>页面自动生成<br>线上部署可用</p></div>
-      <div class="card" style="padding:14px"><h4 style="font-size:14px;color:var(--accent3)">🔴 当前缺陷</h4><p style="font-size:12px">假数据<br>无独立URL<br>无用户系统<br>仅看板型</p></div>
-      <div class="card" style="padding:14px"><h4 style="font-size:14px;color:var(--accent2)">技术栈</h4><p style="font-size:12px">Next.js+React<br>Tailwind/shadcn<br>多模型AI调度<br>Vercel部署</p></div>
-      <div class="card" style="padding:14px"><h4 style="font-size:14px;color:var(--orange)">性能目标</h4><p style="font-size:12px">生成&lt;2s<br>并发100+<br>可用性99.5%<br>单次成本&lt;¥0.2</p></div>
-    </div>
-  </div>
-</div>
-
-<!-- 9/14 路线图 -->
-<div class="slide" data-slide="9">
-  <div class="slide-content">
-    <div class="tagline" style="background:rgba(108,92,231,.12);border-color:rgba(108,92,231,.25)">🛠️ 执行视角</div>
-    <h2>6个月 <span class="hl">执行路线</span></h2>
-    <div class="divider"></div>
-    <div class="tl">
-      <div class="tli"><div class="dot"></div><div class="ph">Phase 1</div><div class="dd">MVP完善<br>第1-2周</div><div class="st">WIP</div></div>
-      <div class="tli"><div class="dot"></div><div class="ph">Phase 2</div><div class="dd">体验升级<br>第3-6周</div><div class="st" style="background:rgba(108,92,231,.12);color:var(--accent)">待启动</div></div>
-      <div class="tli"><div class="dot"></div><div class="ph">Phase 3</div><div class="dd">商业化<br>第7-12周</div><div class="st" style="background:rgba(255,255,255,.05);color:var(--text2)">规划中</div></div>
-      <div class="tli"><div class="dot"></div><div class="ph">Phase 4</div><div class="dd">规模化<br>第13-24周</div><div class="st" style="background:rgba(255,255,255,.05);color:var(--text2)">远期</div></div>
-    </div>
-    <div style="background:rgba(108,92,231,.08);border:1px solid rgba(108,92,231,.15);border-radius:10px;padding:14px 18px;margin-top:12px">
-      <div style="font-size:13px;font-weight:600;color:var(--accent);margin-bottom:6px">Phase 1 本周任务</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:12px;color:var(--text2)">
-        <div>🔴 修复假数据 · 1天 · Codex</div>
-        <div>🔴 生成页面独立URL · 2天 · Codex</div>
-        <div>🟡 表单页面生成 · 2天 · Codex</div>
-        <div>🟡 工作台页面生成 · 2天 · Codex</div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- 10/14 KPI -->
-<div class="slide" data-slide="10">
-  <div class="slide-content">
-    <div class="tagline" style="background:rgba(108,92,231,.12);border-color:rgba(108,92,231,.25)">🛠️ 执行视角</div>
-    <h2>怎么衡量 <span class="hl">成功</span>？</h2>
-    <div class="divider"></div>
-    <div class="kpi-grid">
-      <div class="kpi"><div class="kv">50,000</div><div class="kl">Q4目标MAU</div></div>
-      <div class="kpi" style="border-color:rgba(0,206,201,.12)"><div class="kv">5%→8%</div><div class="kl">付费转化率</div></div>
-      <div class="kpi"><div class="kv">85%</div><div class="kl">月留存目标</div></div>
-      <div class="kpi" style="border-color:rgba(253,121,168,.12)"><div class="kv" style="background:linear-gradient(135deg,var(--accent3),var(--orange));-webkit-background-clip:text">50+</div><div class="kl">NPS净推荐值</div></div>
-    </div>
-    <div style="margin-top:16px;font-size:13px;color:var(--text2)">各阶段成功标志：</div>
-    <table style="font-size:12px">
-      <tr><th style="width:20%">阶段</th><th>成功标志</th></tr>
-      <tr><td style="color:var(--accent);font-weight:600">Phase 1</td><td>可注册、3种页面类型、独立URL访问</td></tr>
-      <tr><td style="color:var(--accent2);font-weight:600">Phase 2</td><td>NPS≥30，月留存≥70%</td></tr>
-      <tr><td style="color:var(--accent3);font-weight:600">Phase 3</td><td>月收入¥5万+，付费用户200+</td></tr>
-      <tr><td style="color:var(--orange);font-weight:600">Phase 4</td><td>月收入¥50万+，年化¥600万+</td></tr>
-    </table>
-  </div>
-</div>
-
-<!-- 11/14 风险 -->
-<div class="slide" data-slide="11">
-  <div class="slide-content">
-    <div class="tagline" style="background:rgba(108,92,231,.12);border-color:rgba(108,92,231,.25)">🛠️ 执行视角</div>
-    <h2>风险与 <span class="hl">应对</span></h2>
-    <div class="divider"></div>
-    <table class="risk-table" style="font-size:12px">
-      <tr><th style="width:22%">风险</th><th style="width:12%">概率</th><th style="width:12%">影响</th><th>应对策略</th></tr>
-      <tr><td>大厂入局</td><td class="h">高</td><td class="m">中</td><td>聚焦垂直场景做深，不做泛平台</td></tr>
-      <tr><td>AI模型成本上升</td><td class="m">中</td><td class="h">高</td><td>多模型策略+小模型兜底</td></tr>
-      <tr><td>用户留存率低</td><td class="m">中</td><td class="h">高</td><td>强Onboarding+首日引导+模板推荐</td></tr>
-      <tr><td>数据合规风险</td><td class="m">中</td><td class="h">高</td><td>企业版私有部署，数据不出域</td></tr>
-      <tr><td>生成质量不稳定</td><td class="m">中</td><td class="m">中</td><td>固化提示词+人工审核机制</td></tr>
-      <tr><td>AI工具单点故障</td><td class="l">低</td><td class="m">中</td><td>多AI兜底+余额监控告警</td></tr>
-    </table>
-  </div>
-</div>
-
-<!-- 13/15 客户故事 -->
-<div class="slide" data-slide="12">
-  <div class="slide-content">
-    <div class="tagline" style="background:rgba(0,206,201,.12);border-color:rgba(0,206,201,.25);color:var(--accent2)">🤝 客户视角</div>
-    <h2>三个真实 <span class="hl">客户故事</span></h2>
-    <div class="divider"></div>
-    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-top:16px">
-      <div class="card" style="padding:18px 16px;border-left:4px solid var(--orange);text-align:left">
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><span style="font-size:18px">🍰</span><span style="font-size:13px;color:var(--orange);font-weight:700">蛋糕店 · 小陈</span></div>
-        <p style="font-size:12px;color:var(--text2);line-height:1.7">微信接单记便利贴 → 丢了单 → 客户跑了</p>
-        <div style="margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.06)">
-          <span style="font-size:12px;color:var(--accent2)">✅ 说句话→手机订单工具→不再丢单</span>
-        </div>
-        <div style="font-size:11px;color:var(--text2);margin-top:6px;font-style:italic">"早知道就好了"</div>
-      </div>
-      <div class="card" style="padding:18px 16px;border-left:4px solid var(--accent);text-align:left">
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><span style="font-size:18px">📊</span><span style="font-size:13px;color:var(--accent);font-weight:700">贸易公司 · 王姐</span></div>
-        <p style="font-size:12px;color:var(--text2);line-height:1.7">销售各管各的Excel → 离职带走客户 → 管理黑洞</p>
-        <div style="margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.06)">
-          <span style="font-size:12px;color:var(--accent2)">✅ 说句话→CRM→团队数据一目了然</span>
-        </div>
-        <div style="font-size:11px;color:var(--text2);margin-top:6px;font-style:italic">"早三年能多赚一倍"</div>
-      </div>
-      <div class="card" style="padding:18px 16px;border-left:4px solid var(--accent3);text-align:left">
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><span style="font-size:18px">🏗️</span><span style="font-size:13px;color:var(--accent3);font-weight:700">起重机厂 · 张总</span></div>
-        <p style="font-size:12px;color:var(--text2);line-height:1.7">报价2小时/次 → 接单算不过来 → 错失生意</p>
-        <div style="margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.06)">
-          <span style="font-size:12px;color:var(--accent2)">✅ 说句话→报价30分钟→接单量+30%</span>
-        </div>
-        <div style="font-size:11px;color:var(--text2);margin-top:6px;font-style:italic">"老李终于不用整天算了"</div>
-      </div>
-    </div>
-    <div style="margin-top:14px;background:rgba(108,92,231,.06);border:1px solid rgba(108,92,231,.12);border-radius:10px;padding:12px 18px;text-align:center">
-      <span style="font-size:12px;color:var(--text2)">💡 瞬搭不适合：复杂审批流 / 大型电商 / 金融级系统。适合的是：<strong style="color:#fff;">你工作中"要是有个小工具就好了"的想法，30秒变现实</strong></span>
-    </div>
-  </div>
-</div>
-
-<!-- 14/15 案例 -->
-<div class="slide" data-slide="13">
-  <div class="slide-content">
-    <div class="tagline" style="background:rgba(0,206,201,.12);border-color:rgba(0,206,201,.25);color:var(--accent2)">🤝 客户视角</div>
-    <h2>真实案例：<span class="hl">起重机报价系统</span></h2>
-    <div class="divider"></div>
-    <div class="case-box">
-      <div style="font-size:13px;color:var(--accent3);font-weight:600">🏆 已落地的验证</div>
-      <div style="margin-top:10px;font-size:14px;color:var(--text2);line-height:1.8">
-        <strong style="color:#fff">客户：</strong>一家起重机生产制造企业<br>
-        <strong style="color:#fff">痛点：</strong>每次报价需工程师人工查参数、手工计算，耗时<strong style="color:var(--accent3)">数小时</strong><br>
-        <strong style="color:#fff">方案：</strong>配件库数字化 → AI智能匹配 → 自动生成报价+申报报告<br>
-        <strong style="color:#fff">结果：</strong><strong style="color:var(--accent2);font-size:18px">数小时 → 30分钟</strong>
-      </div>
-      <div class="case-flow">
-        <span>📦 配件库</span><span class="ar">→</span><span>🧠 AI推理</span><span class="ar">→</span><span>📄 报价/报告</span>
-      </div>
-    </div>
-    <div class="card-grid" style="grid-template-columns:repeat(3,1fr);margin-top:14px">
-      <div class="card" style="padding:14px;text-align:center"><div style="font-size:13px;color:var(--accent2);font-weight:700">✓ 真实客户</div><p style="font-size:11px">非Demo，真实业务已跑通</p></div>
-      <div class="card" style="padding:14px;text-align:center"><div style="font-size:13px;color:var(--accent);font-weight:700">✓ 持续使用</div><p style="font-size:11px">不是一次性，真正在生产中用</p></div>
-      <div class="card" style="padding:14px;text-align:center"><div style="font-size:13px;color:var(--orange);font-weight:700">✓ 可复制</div><p style="font-size:11px">同类制造企业可直接复用</p></div>
-    </div>
-  </div>
-</div>
-
-<!-- 14/14 END -->
-<div class="slide" data-slide="14">
-  <div class="slide-content center-content">
-    <div class="tagline">🌐 立即体验</div>
-    <h1 style="font-size:clamp(32px,4vw,52px)">从想法到产品</h1>
-    <h1 style="font-size:clamp(32px,4vw,52px);margin-top:-4px">只需 <span style="background:linear-gradient(135deg,var(--accent2),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">一句话</span></h1>
-    <p class="subtitle">「瞬搭」· 让每个人都能创造自己的软件工具</p>
-    <div style="margin-top:30px;display:flex;gap:14px;flex-wrap:wrap;justify-content:center">
-      <a href="https://ai-tau-jet-97.vercel.app/" target="_blank" style="display:inline-block;background:linear-gradient(135deg,var(--accent),#8b7cf7);color:#fff;padding:12px 32px;border-radius:40px;text-decoration:none;font-size:15px;font-weight:600;box-shadow:0 6px 25px rgba(108,92,231,.3)">🚀 体验平台</a>
-      <a href="https://sabina86589089.github.io/ai-platform-ppt/" target="_blank" style="display:inline-block;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:#fff;padding:12px 32px;border-radius:40px;text-decoration:none;font-size:15px;font-weight:500">📖 查看方案</a>
-    </div>
-    <div style="margin-top:40px;border-top:1px solid rgba(255,255,255,.05);padding-top:18px;width:100%;max-width:400px">
-      <p style="font-size:12px;color:var(--text2);text-align:center">
-        🤖 由 Hermes Agent 根据娜娜的商业思维迭代生成<br>
-        <span style="font-size:10px">V2.1 · 2026年6月 · 娜娜 × Hermes 联合出品</span>
-      </p>
-    </div>
-  </div>
+<div class="footer">
+  瞬搭 · 由娜娜 × Hermes Agent 出品 · 2026年6月<br>
+  <span style="font-size:11px">项目方案 · 含真实产品截图</span>
 </div>
 
 </div>
-
-<div class="nav">
-  <button class="nav-btn" id="prevBtn">◀</button>
-  <div class="nav-dots" id="dots"></div>
-  <span class="nav-page" id="pageNum">1 / 15</span>
-  <button class="nav-btn" id="nextBtn">▶</button>
-</div>
-
-<script>
-(function(){
-  const s=document.querySelectorAll('.slide'),t=s.length;let c=0;
-  function g(i){if(i<0||i>=t)return;s.forEach(x=>x.classList.remove('active'));s[i].classList.add('active');c=i;u();s[i].scrollTop=0}
-  function u(){document.querySelectorAll('.nav-dot').forEach((d,i)=>d.classList.toggle('active',i===c));document.getElementById('pageNum').textContent=c+1+' / '+t}
-  const dc=document.getElementById('dots');
-  for(let i=0;i<t;i++){const d=document.createElement('div');d.className='nav-dot'+(i===0?' active':'');d.addEventListener('click',()=>g(i));dc.appendChild(d)}
-  document.getElementById('prevBtn').addEventListener('click',()=>g(c-1));
-  document.getElementById('nextBtn').addEventListener('click',()=>g(c+1));
-  document.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key==='ArrowDown'||e.key===' '){e.preventDefault();g(c+1)}else if(e.key==='ArrowLeft'||e.key==='ArrowUp'){e.preventDefault();g(c-1)}else if(e.key==='Home'){e.preventDefault();g(0)}else if(e.key==='End'){e.preventDefault();g(t-1)}});
-  let tx=0;document.addEventListener('touchstart',e=>{tx=e.changedTouches[0].screenX});document.addEventListener('touchend',e=>{const d=tx-e.changedTouches[0].screenX;if(Math.abs(d)>50){d>0?g(c+1):g(c-1)}});
-})();
-</script>
 </body>
 </html>
